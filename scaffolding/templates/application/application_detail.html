@@ -1,0 +1,14 @@
+
+<h1>{{app.name.title}}</h1>
+{{app.get_status_display}}
+
+{% for class in app.class_set.all %}
+    <h2>{{class.title}}</h2>
+     {{class.get_status_display}}
+      Fields:
+      <ul>
+        {% for field in class.field_set.all %}
+          <li>{{field.name}} -  {{field.get_type_display}} - {{field.get_status_display}}</li>
+        {% endfor %}
+      </ul>
+{% endfor %}

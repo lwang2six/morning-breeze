@@ -1,0 +1,6 @@
+
+<ul>
+{% for app in apps %}
+  <li><a href="{{app.get_absolute_url}}">{{app.name.title}}</a><a href="{{app.get_absolute_url}}edit">Edit</a></li>
+{% endfor %}
+</ul>
