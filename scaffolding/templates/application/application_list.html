@@ -1,6 +1,30 @@
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
 
-<ul>
+<!--ul>
 {% for app in apps %}
   <li><a href="{{app.get_absolute_url}}">{{app.name.title}}</a><a href="{{app.get_absolute_url}}edit">Edit</a></li>
 {% endfor %}
-</ul>
+</ul-->
+<form method="post" action="">{% csrf_token %}
+<table id='b'>
+{{formset}}
+</table>
+{{MEDIA_ROOT}}
+<input type="button" id="one_more" value="Add Another">
+<input type="submit" value="Submit" name="save" class="button" />
+</form>
+{{formset.total_form_count}}
+<script>
+  $(document).ready(function(){
+  $('#one_more').click(function(){
+      var v = +$('#id_form-TOTAL_FORMS').val();
+      var extras = [];
+      alert(v);
+      extras.push('<tr><th><label for="id_form-',v,'-name">Name:</label></th><td><input id="id_form-',v,'-name" type="text" maxlength="30" name="form-',v,'-name"></td></tr><tr><th><label for="id_form-',v,'-type">Type:</label></th><td><select id="id_form-',v,'-type" name="form-',v,'-type"><option selected="selected" value="">---------</option><option value="1">BooleanField</option><option value="2">CharField</option><option value="3">DateTimeField</option><option value="4">FileField</option><option value="5">ForeignKey</option><option value="6">IntegerField</option><option value="7">ImageField</option><option value="8">PositiveIntegerField</option><option value="9">TextField</option></select></td></tr>')
+      $('#id_form-TOTAL_FORMS').val(+v+1);
+$('tbody tr:last').after(extras.join(''));
+  });
+});
+</script>
+
+

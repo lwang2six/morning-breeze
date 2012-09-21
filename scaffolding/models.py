@@ -2,21 +2,21 @@ import datetime
 from django.db import models
 
 APPLICATION_STATUS_PROCESSED = 'P'
-APPLICATION_STATUS_UNPROCESSD = 'U'
+APPLICATION_STATUS_UNPROCESSED = 'U'
 APPLICATION_STATUSES = (
     (APPLICATION_STATUS_PROCESSED, 'Processed'),
     (APPLICATION_STATUS_UNPROCESSED, 'Un-Processed'),
 )
 
 CLASS_STATUS_PROCESSED = 'P'
-CLASS_STATUS_UNPROCESSD = 'U'
+CLASS_STATUS_UNPROCESSED = 'U'
 CLASS_STATUSES = (
     (CLASS_STATUS_PROCESSED, 'Processed'),
     (CLASS_STATUS_UNPROCESSED, 'Un-Processed'),
 )
 
 FIELD_STATUS_PROCESSED = 'P'
-FIELD_STATUS_UNPROCESSD = 'U'
+FIELD_STATUS_UNPROCESSED = 'U'
 FIELD_STATUSES = (
     (FIELD_STATUS_PROCESSED, 'Processed'),
     (FIELD_STATUS_UNPROCESSED, 'Un-Processed'),
@@ -46,8 +46,8 @@ FIELD_TYPES = (
 
 class Application(models.Model):
     name = models.CharField(max_length=30)
-    status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPORCESSED)
-    created = models.DateTimeField(defautl=datetime.datetime.now, editable=False)
+    status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
+    created = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __unicode__(self):
         return '%s' % (self.name)
@@ -58,7 +58,7 @@ class Application(models.Model):
 class Class(models.Model):
     name = models.CharField(max_length=30)
     application = models.ForeignKey(Application)
-    status = models.CharField(max_length=1, chocies=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
+    status = models.CharField(max_length=1, choices=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __unicode__(self):
