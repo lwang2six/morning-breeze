@@ -45,32 +45,38 @@ FIELD_TYPES = (
 
 
 class Application(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, verbose_name='Application Name')
     status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
     def __unicode__(self):
         return '%s' % (self.name)
 
-    def get_aboslute_url(self):
+    def get_absolute_url(self):
         return '/applications/%s/' % self.id 
 
 class Class(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, verbose_name='Class Name')
     application = models.ForeignKey(Application)
     status = models.CharField(max_length=1, choices=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+
+    class Meta: 
+        unique_together=(('name', 'application'),)
 
     def __unicode__(self):
         return '%s.%s' % (self.application, self.name)
 
 class Field(models.Model):
     name = models.CharField(max_length=30)
-    parent__class = models.ForeignKey(Class)
+    parent_class = models.ForeignKey(Class)
     type = models.CharField(max_length=1, choices=FIELD_TYPES)
     status = models.CharField(max_length=1, choices=FIELD_STATUSES, default=FIELD_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
  
+    class Meta:
+        unique_together=(('name', 'parent_class'),)
+
     def __unicode__(self):
         return '%s.%s' % (self.parent_class, self.name)
 
