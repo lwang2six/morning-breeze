@@ -61,7 +61,11 @@ def class_edit(request, aid, cname):
         if form.is_valid() and formset.is_valid():
             clas = form.save()
             formset.instance=clas
-            formset.save()
+            for f in formset.forms:
+               a = f.save()
+               a.options = f.cleaned_data['options']
+               a.save()
+               print a.options
             return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'form':form, 'formset':formset})
@@ -69,27 +73,28 @@ def class_edit(request, aid, cname):
 def application_process(request, aid):
     app = get_object_or_404(Application, pk=aid)
 
-    write_type = 'a'
     if app.status == APPLICATION_STATUS_PROCESSED:
         raise Http404
     #writing the stuff to file
     if not os.path.exists('./%s' % app.name):
         os.makedirs('./%s' % app.name)
-        write_type = 'w'
 
-    app_file =  open('./%s/models.py' % app.name, write_type)
-    if write_type == 'w':
-        app_file.write('from django.db import models\n')
+    app_model_file =  open('./%s/models.py' % app.name, 'w')
+
+    app_model_file.write('from django.db import models\n')
     
     for c in app.class_set.filter(status=CLASS_STATUS_UNPROCESSED):
-        if c.
-        app_file.write('\nclass %s(models.Model):\n' % c.name)
-        for f in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
-            app_file.write('\t%s= models.%s()\n'% (f.name, f.get_type_display()))
+        if c.field_set.count():
+            app_model_file.write('\nclass %s(models.Model):\n' % c.name)
+            for f in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
+                app_model_file.write('\t%s= models.%s(%s)\n'% (f.name, f.get_type_display(), f.options))
 
-            #still need template and view functions
-            
-    
-    app_file.close()
+            #still need template and view functions and forms 
+    app_model_file.close()
+     
+    app_view_file = open('./%s/views.py' % app.name, 'w')
+    app_view_file.write('from django.http import HttpResponse, HttpResponseRedirect, Http404\nfrom django.views.generic.simple import direct_to_template\nfrom django.shortcuts import get_object_or_404\n\nfrom %s.models import *\nfrom %s.forms import *\n\n' % (app.name, app.name))
+    app_view_file.write("def %s_list(request):\n   objects = %s.objects.all()\n    return direct_to_template(request, '%s/%s_list.html', {'objets':objects})" % (app.name.lower(), app.name.title(), app.name.lower(), app.name.lower()))
+    app_view_file.close()
 
     return HttpResponseRedirect('/applications/')

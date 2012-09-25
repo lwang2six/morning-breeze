@@ -1,8 +1,9 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
 
 <form method="post" action="">{% csrf_token %}
-{{form.name.label}}{{form.name}}
 <table id='b'>
+<tr><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
+
 {{formset.management_form}}
 {% for f in formset.forms %}
 {{f}}
@@ -18,7 +19,7 @@
       $('#one_more').click(function(){
           var v = +$('#id_field_set-TOTAL_FORMS').val();
           var extras = [];
-          extras.push('<tr><th><label for="id_field_set-',v,'-name">Name:</label></th><td><input id="id_field_set-',v,'-name" type="text" maxlength="30" name="field_set-',v,'-name"></td></tr><tr><th><label for="id_field_set-',v,'-type">Type:</label></th><td><select id="id_field_set-',v,'-type" name="field_set-',v,'-type"><option selected="selected" value="">---------</option><option value="1">BooleanField</option><option value="2">CharField</option><option value="3">DateTimeField</option><option value="4">FileField</option><option value="5">ForeignKey</option><option value="6">IntegerField</option><option value="7">ImageField</option><option value="8">PositiveIntegerField</option><option value="9">TextField</option></select><input id="id_field_set-',v,'-id" type="hidden" name="field_set-',v,'-id"><input id="id_field_set-',v,'-parent_class" type="hidden" value="{{clas.id}}" name="field_set-',v,'-parent_class"></td></tr>')
+          extras.push('<tr><th><label for="id_field_set-',v,'-name">Name:</label></th><td><input id="id_field_set-',v,'-name" type="text" maxlength="30" name="field_set-',v,'-name"></td></tr><tr><th><label for="id_field_set-',v,'-type">Type:</label></th><td><select id="id_field_set-',v,'-type" name="field_set-',v,'-type"><option selected="selected" value="">---------</option><option value="1">BooleanField</option><option value="2">CharField</option><option value="3">DateTimeField</option><option value="4">FileField</option><option value="5">ForeignKey</option><option value="6">IntegerField</option><option value="7">ImageField</option><option value="8">PositiveIntegerField</option><option value="9">TextField</option></select</td></tr><tr><th><label_for="id_field_set-',v,'-options">OPtions:</label></th><td><textarea id="id_field_set-',v,'-options" name="field_set-',v,'-options" cols="40" rows="10"></textarea><input id="id_field_set-',v,'-id" type="hidden" name="field_set-',v,'-id"><input id="id_field_set-',v,'-parent_class" type="hidden" value="{{clas.id}}" name="field_set-',v,'-parent_class"></td></tr>')
           $('#id_field_set-TOTAL_FORMS').val(+v+1);
           $('tbody tr:last').after(extras.join(''));
       });

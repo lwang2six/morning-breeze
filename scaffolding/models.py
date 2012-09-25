@@ -42,8 +42,6 @@ FIELD_TYPES = (
     (FIELD_TYPE_POSITIVEINTEGER, 'PositiveIntegerField'),
     (FIELD_TYPE_TEXT, 'TextField'),
 )
-
-
 class Application(models.Model):
     name = models.CharField(max_length=30, verbose_name='Application Name')
     status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
@@ -71,6 +69,7 @@ class Field(models.Model):
     name = models.CharField(max_length=30)
     parent_class = models.ForeignKey(Class)
     type = models.CharField(max_length=1, choices=FIELD_TYPES)
+    options = models.TextField(blank=True,null=True)
     status = models.CharField(max_length=1, choices=FIELD_STATUSES, default=FIELD_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
  
