@@ -2,6 +2,7 @@
 
 <form method="post" action="">{% csrf_token %}
 <table id='b'>
+{{form}}
 <tr><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
 
 {{formset.management_form}}
