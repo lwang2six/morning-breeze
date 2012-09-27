@@ -60,12 +60,7 @@ def class_edit(request, aid, cname):
 
         if form.is_valid() and formset.is_valid():
             clas = form.save()
-            formset.instance=clas
-            for f in formset.forms:
-               a = f.save()
-               a.options = f.cleaned_data['options']
-               a.save()
-               print a.options
+            formset.save()
             return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'form':form, 'formset':formset})
@@ -79,6 +74,8 @@ def application_process(request, aid):
     #writing the stuff to file
     if not os.path.exists('./%s' % app_name):
         os.makedirs('./%s' % app_name)
+        app_init_file = open('./%s/__init__.py' % app_name, 'w')
+        app_init_file.close()
         os.makedirs('./%s/templates' % app_name)
 
     #making models.py
@@ -101,7 +98,7 @@ def application_process(request, aid):
     #making urls.py
     app_url_file = open('./%s/urls.py' % app_name, 'w')
     app_url_file.write('from django.conf.urls.defaults import *\n')
-    app_url_file.write('urlpatterns = patterns('',\n')
+    app_url_file.write("urlpatterns = patterns('',\n")
 
     for c in app.class_set.filter(status=CLASS_STATUS_UNPROCESSED):
         if c.field_set.count():
@@ -110,13 +107,13 @@ def application_process(request, aid):
             for f in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
                 app_model_file.write('    %s= models.%s(%s)\n'% (f.name.lower(), f.get_type_display(), f.options))
             app_model_file.write('    def __unicode__(self):\n')
-            x = "        return '%%s - %%s' % (self.id, self."
-            x += "%s)\n" % c.field_set.all()[0].name
+            x = "        return '%s - %s' % (self.id, self."
+            x += "%s)\n" % c.field_set.all()[0].name.lower()
             print x
             app_model_file.write(x)
             app_model_file.write('    def get_absolute_url(self):\n')
             x = "        return '/%s/" % class_name
-            x += "%%s % self.id)\n"
+            x += "%s' % self.id\n"
             app_model_file.write(x)
 
 #function for view
@@ -137,7 +134,7 @@ def application_process(request, aid):
             app_view_file.write('        if form.is_valid():\n')
             app_view_file.write('            object = form.save()\n')
             app_view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
-            app_view_file.write("    return direct_to_template('%s/%s_new.html', {'form':form})\n" % (class_name, class_name))
+            app_view_file.write("    return direct_to_template(request, '%s/%s_new.html', {'form':form})\n" % (class_name, class_name))
             app_view_file.write('\n')
             app_view_file.write('def %s_edit(request, oid):\n' % class_name)
             app_view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_name.title())
@@ -147,7 +144,7 @@ def application_process(request, aid):
             app_view_file.write('        if form.is_valid():\n')
             app_view_file.write('            form.save()\n')
             app_view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
-            app_view_file.write("    return direct_to_template('%s/%s_edit.html', {'form':form, 'object':object})\n" % (class_name, class_name))
+            app_view_file.write("    return direct_to_template(request, '%s/%s_edit.html', {'form':form, 'object':object})\n" % (class_name, class_name))
             app_view_file.write('\n')
             app_view_file.write('def %s_delete(request,oid):\n' % class_name)
             app_view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_name.title())
@@ -157,7 +154,7 @@ def application_process(request, aid):
             app_view_file.write('        else:\n')
             app_view_file.write('            object.delete()\n')
             app_view_file.write("            return HttpResponseRedirect('/%s/')\n" % class_name)
-            app_view_file.write("    return direct_to_response(request, '%s/%s_delete.html', {'object':object})\n" % (class_name, class_name))
+            app_view_file.write("    return direct_to_template(request, '%s/%s_delete.html', {'object':object})\n" % (class_name, class_name))
             app_view_file.write('\n')
 
             app_form_file.write('class %sForm(forms.ModelForm):\n' % class_name.title())
@@ -168,20 +165,32 @@ def application_process(request, aid):
             app_form_file.write('        #fields = []\n')
             app_form_file.write('        #exclude = []\n')
 
-            app_url_file.write("    (r'^%s/new/$', '%s.views.%s_new'\n" % (class_name, app_name, class_name))
-            app_url_file.write("    (r'^%s/(?P<oid>\d+)/edit/$', '%s.views.%s_edit'\n" % (class_name, app_name, class_name))
-            app_url_file.write("    (r'^%s/(?P<oid>\d+)/delete/$', '%s.views.%s_delete'\n" % (class_name, app_name, class_name))
-            app_url_file.write("    (r'^%s/(?P<oid>\d+)/$', '%s.views.%s_details'\n" % (class_name, app_name, class_name))
-            app_url_file.write("    (r'^%s/$', '%s.views.%s_list'\n" % (class_name, app_name, class_name))
+            app_url_file.write("    (r'^%s/new/$', '%s.views.%s_new'),\n" % (class_name, app_name, class_name))
+            app_url_file.write("    (r'^%s/(?P<oid>\d+)/edit/$', '%s.views.%s_edit'),\n" % (class_name, app_name, class_name))
+            app_url_file.write("    (r'^%s/(?P<oid>\d+)/delete/$', '%s.views.%s_delete'),\n" % (class_name, app_name, class_name))
+            app_url_file.write("    (r'^%s/(?P<oid>\d+)/$', '%s.views.%s_detail'),\n" % (class_name, app_name, class_name))
+            app_url_file.write("    (r'^%s/$', '%s.views.%s_list'),\n" % (class_name, app_name, class_name))
 
 
             if not os.path.exists('./%s/templates/%s' % (app_name, class_name)):
                 os.makedirs('./%s/templates/%s' % (app_name, class_name))
             temp_root = './%s/templates/%s/%s_' % (app_name, class_name, class_name)
 
+            temp_file = open('%sbase.html' % temp_root, 'w')
+            temp_file.write('<head>')
+            x = '    <title>%s' % class_name
+            x +=' {% if object %}- {{object}}{% endif %}</title>'
+            temp_file.write(x)
+            temp_file.write('</head>')
+            temp_file.write('<body>')
+            temp_file.write('    {% block content %}\n')
+            temp_file.write('    {% endblock content %}\n')
+            temp_file.write('</body>')
+            temp_file.close()
+
             temp_file = open('%slist.html' % (temp_root), 'w')
             x = '{% extends "'
-            x += '%s/base_%s.html"' % (class_name, class_name)
+            x += '%s/%s_base.html"' % (class_name, class_name)
             x += ' %}\n'
             temp_file.write(x)
             temp_file.write('{% block content %}\n')
@@ -198,7 +207,7 @@ def application_process(request, aid):
 
             temp_file = open('%sdetail.html' % temp_root, 'w')
             x = '{% extends "'
-            x += '%s/base_%s.html"' % (class_name, class_name)
+            x += '%s/%s_base.html"' % (class_name, class_name)
             x += ' %}\n'
             temp_file.write(x)
             temp_file.write('{% block content %}\n')
@@ -207,10 +216,11 @@ def application_process(request, aid):
                 temp_file.write('    %s: {{object.%s}}<br/>\n' % (i.name.title(), i.name.lower()))
             temp_file.write('    </div>\n')
             temp_file.write('{% endblock content %}\n')
+            temp_file.close()
 
             temp_file = open('%snew.html' % temp_root, 'w')
             x = '{% extends "'
-            x += '%s/base_%s.html"' % (class_name, class_name)
+            x += '%s/%s_base.html"' % (class_name, class_name)
             x += ' %}\n'
             temp_file.write(x)
             temp_file.write('{% block content %}\n')
@@ -229,10 +239,11 @@ def application_process(request, aid):
             temp_file.write('        </form>\n')
             temp_file.write('    </div>\n')
             temp_file.write('{% endblock content %}\n')
+            temp_file.close()
 
             temp_file = open('%sedit.html' % temp_root, 'w')
             x = '{% extends "'
-            x += '%s/base_%s.html"' % (class_name, class_name)
+            x += '%s/%s_base.html"' % (class_name, class_name)
             x += ' %}\n'
             temp_file.write(x)
             temp_file.write('{% block content %}\n')
@@ -252,21 +263,23 @@ def application_process(request, aid):
             temp_file.write('        </form>\n')
             temp_file.write('    </div>\n')
             temp_file.write('{% endblock content %}\n')
+            temp_file.close()
 
             temp_file = open('%sdelete.html' % temp_root, 'w')
             x = '{% extends "'
-            x += '%s/base_%s.html"' % (class_name, class_name)
+            x += '%s/%s_base.html"' % (class_name, class_name)
             x += ' %}\n'
             temp_file.write(x)
             temp_file.write('{% block content %}\n')
             temp_file.write('    <div>\n')
             temp_file.write('        <h2>Are you sure you want to delete: <a href="{{object.get_absolute_url}}">{{object}}</a></h2>\n')
             temp_file.write('    </div>\n')
-            temp_file.write('    <form method="post" action="">{% csrf token %}\n')
+            temp_file.write('    <form method="post" action="">{% csrf_token %}\n')
             temp_file.write('        <input type="submit" value="Submit" name="save" class="button"/>\n')
             temp_file.write('        <input type="submit" value="Cancel" name="cancel" class="button"/>\n')
             temp_file.write('    </form>\n')
             temp_file.write('{% endblock content %}\n')
+            temp_file.close()
 
     app_url_file.write(')')
     app_url_file.close()

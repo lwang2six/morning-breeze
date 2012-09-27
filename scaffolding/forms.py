@@ -52,8 +52,10 @@ class ClassForm(forms.ModelForm):
 class FieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FieldForm,self).__init__(*args,**kwargs)
-  
-    options = forms.MultipleChoiceField(label='Options', choices=FIELD_OPTIONS, widget=CheckboxSelectMultiple, required=False)
+        initial_options=[]
+        if self.instance.id is not None:
+            initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
+        self.fields['options'] = forms.MultipleChoiceField(label='Options', choices=FIELD_OPTIONS, widget=CheckboxSelectMultiple, initial=initial_options, required=False)
 
     class Meta:
         model = Field
@@ -81,42 +83,43 @@ class FieldForm(forms.ModelForm):
         #datetime
         if stype == '3':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for datetime field")
 
         #file
         if stype == '4':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for file field")
 
         #fk change to classes
         #if stype == '5':
         #    if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
-        #        raise forms.ValidationError("One of the selected options is not allowed for char field")
+        #        raise forms.ValidationError("One of the selected options is not allowed for foreign key")
 
         #integer
         if stype == '6':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for integer field")
 
         #image
         if stype == '7':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK,  FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for image field")
 
         #positiveinteger
         if stype == '8':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for positive integer field")
 
         #text
         if stype == '9':
             if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
-                raise forms.ValidationError("One of the selected options is not allowed for char field")
+                raise forms.ValidationError("One of the selected options is not allowed for text field")
         
         x = ''
         for i in self.cleaned_data.get('options'):
             x += '%s, ' % i
-        return x[:-2]
+        self.instance.options = x[:-2]
+        return self.instance.options
 
 
 
