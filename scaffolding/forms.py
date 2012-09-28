@@ -4,30 +4,7 @@ from django.forms.fields import MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple
 
 from scaffolding.models import *
-
-FIELD_OPTION_BLANK = 'blank=True'
-FIELD_OPTION_CHOICES = 'choices=[]'
-FIELD_OPTION_DEFAULT = 'default=""'
-FIELD_OPTION_EDITABLE = 'editable=False'
-FIELD_OPTION_HELP_TEXT = 'help_text="some help text for this field"'
-FIELD_OPTION_MAX_LENGTH = 'max_length=1'
-FIELD_OPTION_NULL = 'null=True'
-FIELD_OPTION_RELATED_NAME = 'related_name="some_special_name"'
-FIELD_OPTION_UNIQUE = 'unique=False'
-FIELD_OPTION_VERBOSE_NAME = 'verbose_name="display name"'
-
-FIELD_OPTIONS =(
-            (FIELD_OPTION_BLANK , 'blank'),
-            (FIELD_OPTION_CHOICES , 'choices'),
-            (FIELD_OPTION_DEFAULT , 'default'),
-            (FIELD_OPTION_EDITABLE, 'editable'), 
-            (FIELD_OPTION_HELP_TEXT, 'help text'),
-            (FIELD_OPTION_MAX_LENGTH, 'max length'),
-            (FIELD_OPTION_NULL, 'null'), 
-            (FIELD_OPTION_RELATED_NAME, 'related name'), 
-            (FIELD_OPTION_UNIQUE, 'unique'),
-            (FIELD_OPTION_VERBOSE_NAME, 'verbose name'), 
-        )
+from scaffolding.utils import *
 
 class ApplicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -53,9 +30,43 @@ class FieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FieldForm,self).__init__(*args,**kwargs)
         initial_options=[]
+        option_choice = FIELD_OPTION_DEFAULT
+
         if self.instance.id is not None:
-            initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
-        self.fields['options'] = forms.MultipleChoiceField(label='Options', choices=FIELD_OPTIONS, widget=CheckboxSelectMultiple, initial=initial_options, required=False)
+            if self.instance.type == FIELD_TYPE_FOREIGNKEY:
+                fk_initial = None
+                initial_options = []
+                for i in self.instance.options.split(','):
+                    if 'fk_name=' in i:
+                        fk_initial = i.lstrip().rstrip().strip('fk_name=').title()
+                    else:
+                        initial_options.append(i.lstrip().rstrip())                    
+                self.fields['option_fk_name'] = forms.CharField(label="Foreign Key Class", initial=fk_initial, required=True)
+            else:
+                initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
+
+            stype = self.instance.type
+            if stype:
+                if stype == FIELD_TYPE_BOOLEAN:
+                    option_choice = FIELD_OPTIONS_BOOL
+                if stype == FIELD_TYPE_CHAR:
+                    option_choice = FIELD_OPTIONS_CHAR
+                if stype == FIELD_TYPE_DATETIME:
+                    option_choice = FIELD_OPTIONS_DATETIME
+                if stype == FIELD_TYPE_FILE:
+                    option_choice = FIELD_OPTIONS_FILE
+                if stype == FIELD_TYPE_FOREIGNKEY:
+                    option_choice = FIELD_OPTIONS_FK
+                if stype == FIELD_TYPE_INTEGER:
+                    option_choice = FIELD_OPTIONS_INTEGER
+                if stype == FIELD_TYPE_IMAGE:
+                    option_choice = FIELD_OPTIONS_IMAGE
+                if stype == FIELD_TYPE_POSITIVEINTEGER:
+                    option_choice = FIELD_OPTIONS_PINT
+                if stype == FIELD_TYPE_TEXT:   
+                    option_choice = FIELD_OPTIONS_TEXT
+
+        self.fields['options'] = forms.MultipleChoiceField(label='Options', choices=option_choice, widget=CheckboxSelectMultiple, initial=initial_options, required=False)
 
     class Meta:
         model = Field
@@ -68,57 +79,67 @@ class FieldForm(forms.ModelForm):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
+    def clean_option_fk_name(self):
+        fkc = self.cleaned_data.get('option_fk_name')
+        if fkc:
+            self.instance.options += ", fk_name=%s" % fkc.strip().title()
+            return fkc
+        else:
+            return None
+
     def clean_options(self):
         stype = self.cleaned_data.get('type')
         #boolean
         if stype == '1':
-            if not set(self.cleaned_data.get('options')).issubset([FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME]):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_BOOL_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for boolean field")
 
         #char
         if stype == '2':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_CHOICES, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_CHAR_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for char field")
 
         #datetime
         if stype == '3':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_DATETIME_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for datetime field")
 
         #file
         if stype == '4':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_FILE_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for file field")
 
         #fk change to classes
-        #if stype == '5':
-        #    if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
-        #        raise forms.ValidationError("One of the selected options is not allowed for foreign key")
+        if stype == '5':
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_FK_SET):
+                raise forms.ValidationError("One of the selected options is not allowed for foreign key")
 
         #integer
         if stype == '6':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_INTEGER_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for integer field")
 
         #image
         if stype == '7':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK,  FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_IMAGE_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for image field")
 
         #positiveinteger
         if stype == '8':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_PINT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for positive integer field")
 
         #text
         if stype == '9':
-            if not set(self.cleaned_data.get('options')).issubset(set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT, FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE, FIELD_OPTION_VERBOSE_NAME])):
+            if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_TEXT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for text field")
         
         x = ''
+
         for i in self.cleaned_data.get('options'):
             x += '%s, ' % i
         self.instance.options = x[:-2]
+        self.clean_option_fk_name()
         return self.instance.options
 
 
