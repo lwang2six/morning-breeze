@@ -80,7 +80,7 @@ def application_process(request, aid):
 
     #making models.py
     app_model_file =  open('./%s/models.py' % app_name, 'w')
-    app_model_file.write('from django.db import models\n')
+    app_model_file.write('from django.db import models\n\n')
 
     #making views.py
     app_view_file = open('./%s/views.py' % app_name, 'w')
@@ -97,7 +97,7 @@ def application_process(request, aid):
 
     #making urls.py
     app_url_file = open('./%s/urls.py' % app_name, 'w')
-    app_url_file.write('from django.conf.urls.defaults import *\n')
+    app_url_file.write('from django.conf.urls.defaults import *\n\n')
     app_url_file.write("urlpatterns = patterns('',\n")
 
     for c in app.class_set.filter(status=CLASS_STATUS_UNPROCESSED):
@@ -106,12 +106,12 @@ def application_process(request, aid):
             app_model_file.write('class %s(models.Model):\n' % class_name.title())
             for f in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
                 app_model_file.write('    %s= models.%s(%s)\n'% (f.name.lower(), f.get_type_display(), f.options))
-            app_model_file.write('    def __unicode__(self):\n')
+            app_model_file.write('\n    def __unicode__(self):\n')
             x = "        return '%s - %s' % (self.id, self."
             x += "%s)\n" % c.field_set.all()[0].name.lower()
             print x
             app_model_file.write(x)
-            app_model_file.write('    def get_absolute_url(self):\n')
+            app_model_file.write('\n    def get_absolute_url(self):\n')
             x = "        return '/%s/" % class_name
             x += "%s' % self.id\n"
             app_model_file.write(x)

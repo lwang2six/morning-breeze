@@ -1,11 +1,72 @@
+{% load scaffold_tags %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
+
 <form method="post" action="">{% csrf_token %}
 <table id='b'>
-{{form}}
+{% for field in form %}
+    <tr><th>{{field.label_tag}}</th><td>{{field}}</td></tr>
+{% endfor %} 
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
 {{formset.management_form}}
 {% for f in formset.forms %}
-{{f}}
+
+    <tr class="{{f.prefix}}_name_row"><th>{{f.name.label_tag}}</th><td>{{f.name}}</td></tr>
+    <tr class="{{f.prefix}}_type_row"><th>{{f.type.label_tag}}</th><td>{{f.type}}</td></tr>
+    {% if f.option_fk_name %}
+      <tr class="{{f.prefix}}_option_fk_name_row"><th>{{f.option_fk_name.label_tag}}</th><td>{{f.option_fk_name}}</td></tr>
+    {% endif %}
+    <tr class="{{f.prefix}}_options_row"><th>{{f.options.label_tag}}</th><td><div class="id_{{f.prefix}}_choice_list"> {{f.options}}</div></td></tr>
+    <script>$('#id_{{f.prefix}}-type').change(function(){
+            $("#id_{{f.prefix}}-type option:selected").each(function(){
+
+                var x = $(this).text();
+                var field;
+                if(x=='BooleanField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "boolean" f.prefix%}';
+                }
+                else if(x == 'CharField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "char" f.prefix%}';
+                }
+                else if(x == 'DateTimeField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "datetime" f.prefix%}';
+                }
+                else if(x == 'FileField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "file" f.prefix%}';
+                }
+                else if(x == 'ForeignKey'){
+                    $('.{{f.prefix}}_type_row').after('<tr class="{{f.prefix}}_option_fk_name_row"><th><label for="id_{{f.prefix}}-option_fk_name">Foreign Key Class</label></th><td><input type="text" name="{{f.prefix}}-option_fk_name" id="id_{{f.prefix}}-option_fk_name"/></td></tr>');
+                    field = '{% doSome "fk" f.prefix%}';
+                }
+                else if(x == 'IntegerField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "int" f.prefix%}';
+                }
+                else if(x == 'ImageField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "image" f.prefix%}';
+                }
+                else if(x == 'PositiveIntegerField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "pint" f.prefix%}';
+                }
+                else if(x == 'TextField'){
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "text" f.prefix%}';
+                }
+                else {
+                    $('.{{f.prefix}}_option_fk_name_row').remove()
+                    field = '{% doSome "default" f.prefix%}';
+                }
+                $('.id_{{f.prefix}}_choice_list').replaceWith(field);
+            });
+       });
+    </script>
+  {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
 
 {% endfor %}
 </table>

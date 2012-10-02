@@ -30,7 +30,7 @@ class FieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FieldForm,self).__init__(*args,**kwargs)
         initial_options=[]
-        option_choice = FIELD_OPTION_DEFAULT
+        option_choice = FIELD_OPTIONS_DEFAULT
 
         if self.instance.id is not None:
             if self.instance.type == FIELD_TYPE_FOREIGNKEY:
