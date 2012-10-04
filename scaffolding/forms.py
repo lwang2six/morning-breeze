@@ -89,10 +89,12 @@ class FieldForm(forms.ModelForm):
 
     def clean_options(self):
         stype = self.cleaned_data.get('type')
+        def_op = 'default=""'
         #boolean
         if stype == '1':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_BOOL_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for boolean field")
+            def_op = "default=False"
 
         #char
         if stype == '2':
@@ -103,7 +105,7 @@ class FieldForm(forms.ModelForm):
         if stype == '3':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_DATETIME_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for datetime field")
-
+            def_op = "default=datetime.datetime.now"
         #file
         if stype == '4':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_FILE_SET):
@@ -118,6 +120,7 @@ class FieldForm(forms.ModelForm):
         if stype == '6':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_INTEGER_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for integer field")
+            def_op = "default=0"
 
         #image
         if stype == '7':
@@ -128,7 +131,7 @@ class FieldForm(forms.ModelForm):
         if stype == '8':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_PINT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for positive integer field")
-
+            def_op = "default=0"
         #text
         if stype == '9':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_TEXT_SET):
@@ -137,7 +140,10 @@ class FieldForm(forms.ModelForm):
         x = ''
 
         for i in self.cleaned_data.get('options'):
-            x += '%s, ' % i
+            if "default" in i:
+                x += '%s, ' % def_op
+            else:  
+                x += '%s, ' % i
         self.instance.options = x[:-2]
         self.clean_option_fk_name()
         return self.instance.options

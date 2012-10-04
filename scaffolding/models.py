@@ -65,6 +65,17 @@ class Class(models.Model):
     def __unicode__(self):
         return '%s.%s' % (self.application, self.name)
 
+    def get_edit_absolute_url(self):
+        return '%sedit/classes/%s/' % (self.application.get_absolute_url(), self.name)
+
+    def get_next_class(self):
+        try:
+            c =  list(self.application.class_set.order_by('id'))
+            position = c.index(self)
+            return c[position+1] if position != (len(c)-1) else None
+        except:
+            return None
+
 class Field(models.Model):
     name = models.CharField(max_length=30)
     parent_class = models.ForeignKey(Class)

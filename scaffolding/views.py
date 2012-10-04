@@ -42,6 +42,10 @@ def application_base(request, aid=None):
             app = form.save()
             formset.instance=app
             formset.save()
+            print app.class_set.all()
+            if not aid:
+                if app.class_set.count():
+                    return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
             return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'application/application_edit.html', {'app':app, 'form':form, 'formset':formset})
@@ -57,10 +61,14 @@ def class_edit(request, aid, cname):
     if request.method == 'POST':
         form = ClassForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
-
+        print formset.errors
         if form.is_valid() and formset.is_valid():
             clas = form.save()
             formset.save()
+            if request.POST.get('continue'):
+                if clas.get_next_class():
+                    return HttpResponseRedirect(clas.get_next_class().get_edit_absolute_url())
+               
             return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'form':form, 'formset':formset})
