@@ -1,7 +1,7 @@
 import re
 from django import forms
 from django.forms.fields import MultipleChoiceField
-from django.forms.widgets import CheckboxSelectMultiple
+from django.forms.widgets import CheckboxSelectMultiple, HiddenInput
 
 from scaffolding.models import *
 from scaffolding.utils import *
@@ -41,7 +41,7 @@ class FieldForm(forms.ModelForm):
                         fk_initial = i.lstrip().rstrip().strip('fk_name=').title()
                     else:
                         initial_options.append(i.lstrip().rstrip())                    
-                self.fields['option_fk_name'] = forms.CharField(label="Foreign Key Class", initial=fk_initial, required=True)
+                self.fields['option_fk_name'] = forms.CharField(label="Foreign Key Class", initial=fk_initial, required=False)
             else:
                 initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
 
@@ -66,7 +66,7 @@ class FieldForm(forms.ModelForm):
                 if stype == FIELD_TYPE_TEXT:   
                     option_choice = FIELD_OPTIONS_TEXT
 
-        self.fields['options'] = forms.MultipleChoiceField(label='Options', choices=option_choice, widget=CheckboxSelectMultiple, initial=initial_options, required=False)
+        self.fields['options'] = forms.MultipleChoiceField(label='Options', choices=FIELD_OPTIONS_DEFAULT, widget=CheckboxSelectMultiple, initial=initial_options, required=False)
 
     class Meta:
         model = Field
@@ -80,16 +80,26 @@ class FieldForm(forms.ModelForm):
         return self.cleaned_data.get('name')
 
     def clean_option_fk_name(self):
-        fkc = self.cleaned_data.get('option_fk_name')
-        if fkc:
-            self.instance.options += ", fk_name=%s" % fkc.strip().title()
-            return fkc
+        if self.cleaned_data['type'] == FIELD_TYPE_FOREIGNKEY:
+            fkc = self.cleaned_data.get('option_fk_name')
+            if not fkc:
+                fkc = self.data['%s-options_fk_name' % self.prefix]
+            if fkc:
+                self.instance.options += ", fk_name=%s" % fkc.strip().title()
+                return fkc
+            else:
+                raise forms.ValidationError("Foreign Key Name cannot be empty.")
         else:
             return None
 
     def clean_options(self):
         stype = self.cleaned_data.get('type')
         def_op = 'default=""'
+        try:
+            print 'weeeee'
+            print self.cleaned_data['options']
+        except:
+            print 'inside here'
         #boolean
         if stype == '1':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_BOOL_SET):

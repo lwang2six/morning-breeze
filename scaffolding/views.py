@@ -62,8 +62,10 @@ def class_edit(request, aid, cname):
         form = ClassForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
         print formset.errors
+
         if form.is_valid() and formset.is_valid():
             clas = form.save()
+
             formset.save()
             if request.POST.get('continue'):
                 if clas.get_next_class():
