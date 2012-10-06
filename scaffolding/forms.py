@@ -38,9 +38,9 @@ class FieldForm(forms.ModelForm):
                 initial_options = []
                 for i in self.instance.options.split(','):
                     if 'fk_name=' in i:
-                        fk_initial = i.lstrip().rstrip().strip('fk_name=').title()
+                        fk_initial = i.lstrip().rstrip().split('fk_name=')[1]
                     else:
-                        initial_options.append(i.lstrip().rstrip())                    
+                        initial_options.append(i.lstrip().rstrip())                
                 self.fields['option_fk_name'] = forms.CharField(label="Foreign Key Class", initial=fk_initial, required=False)
             else:
                 initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
@@ -74,32 +74,32 @@ class FieldForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        pattern = re.compile(r'^[a-zA-Z]+([\-_]*[a-zA-Z])?$')
+        pattern = re.compile(r'^[a-zA-Z]+[a-zA-Z\-_]*[a-zA-Z]+$')
         if not pattern.match(name):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
     def clean_option_fk_name(self):
-        if self.cleaned_data['type'] == FIELD_TYPE_FOREIGNKEY:
-            fkc = self.cleaned_data.get('option_fk_name')
-            if not fkc:
-                fkc = self.data['%s-options_fk_name' % self.prefix]
-            if fkc:
-                self.instance.options += ", fk_name=%s" % fkc.strip().title()
-                return fkc
+        try:
+            if self.cleaned_data['type'] == FIELD_TYPE_FOREIGNKEY:
+                fkc = self.cleaned_data.get('option_fk_name')
+                if not fkc:
+                    fkc = self.data['%s-options_fk_name' % self.prefix]
+                if fkc:
+                    x = "fk_name=%s" % fkc.strip()
+                    self.instance.options += ", %s" % x if self.instance.options else x
+                    return fkc
+                else:
+                    raise forms.ValidationError("Foreign Key Name cannot be empty.")
             else:
-                raise forms.ValidationError("Foreign Key Name cannot be empty.")
-        else:
+                return None
+        except:
             return None
 
     def clean_options(self):
         stype = self.cleaned_data.get('type')
         def_op = 'default=""'
-        try:
-            print 'weeeee'
-            print self.cleaned_data['options']
-        except:
-            print 'inside here'
+
         #boolean
         if stype == '1':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_BOOL_SET):

@@ -53,6 +53,9 @@ class Application(models.Model):
     def get_absolute_url(self):
         return '/applications/%s/' % self.id 
 
+    def is_processed(self):
+        return self.status==APPLICATION_STATUS_PROCESSED
+
 class Class(models.Model):
     name = models.CharField(max_length=30, verbose_name='Class Name')
     application = models.ForeignKey(Application)

@@ -24,7 +24,8 @@ FIELD_OPTIONS_DEFAULT = (
     (FIELD_OPTION_UNIQUE, 'unique'),
     (FIELD_OPTION_VERBOSE_NAME, 'verbose name'), 
 )
-FIELD_OPTIONS_DEFAULT_SET = set([FIELD_OPTION_BLANK, FIELD_OPTION_CHOICES, FIELD_OPTION_DEFAULT,
+FIELD_OPTIONS_DEFAULT_SET = set([FIELD_OPTION_BLANK, FIELD_OPTION_CHOICES, FIELD_OPTION_DEFAULT,'default=False',
+                                'default=datetime.datetime.now', 'default=0',
                                  FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, 
                                  FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, 
                                  FIELD_OPTION_RELATED_NAME, FIELD_OPTION_UNIQUE,
@@ -124,3 +125,16 @@ FIELD_OPTIONS_TEXT_SET = set([FIELD_OPTION_BLANK, FIELD_OPTION_DEFAULT,
                               FIELD_OPTION_EDITABLE, FIELD_OPTION_HELP_TEXT, 
                               FIELD_OPTION_MAX_LENGTH, FIELD_OPTION_NULL, 
                               FIELD_OPTION_RELATED_NAME,  FIELD_OPTION_VERBOSE_NAME])
+
+
+
+
+
+
+
+
+
+
+
+    
+

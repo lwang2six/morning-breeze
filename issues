@@ -1,0 +1,19 @@
+issues:
+    figuring out formset
+    figuring out how to dynaimically add another formset
+    figuring out how to process the formset
+    figuring out how to process multiple forms on one view
+
+    figuring out how to wrap the class template's formset's form's options' choices in a custom class tag so javascript can overwrite it when it is necessary such as when the form type changes
+
+
+    couldnt figure out why it was breaking for empty forms.....spelling error
+
+    figuring how to dynamically change form choices and modify the choices based on field type. 
+    figuring how to save the form when the form changes type since each type has a different set of forms, for some reason, the form it validate against is not on the fly but pre rendered choices. Have to load a default form for django but render a different form in the template based on the initial type
+    figuring how to save fk class name when changing an existing field form. 
+    figuring how to save the checked selections and display the check selections correctly since the actual options is being loaded by template tags.
+
+notes:
+    assumes all classes created are presented at the root level
+    thought about using ajax to do the form changes but it might be better suited for version 2 when most of the project is complete and looking forward to upgrade/update the project. since the initial goal is to complete the project.

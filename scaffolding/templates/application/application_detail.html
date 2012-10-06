@@ -6,15 +6,16 @@
     <h2>{{c.name}}</h2>
      {{c.get_status_display}} - <a href="{{app.get_absolute_url}}edit/classes/{{c.name}}">Edit</a><br/>
 
+    {% if c.field_set.all %}
       Fields:
       <ul>
         {% for f in c.field_set.all %}
           <li>{{f.name}} -  {{f.get_type_display}} - {{f.get_status_display}}</li>
         {% endfor %}
       </ul>
+    {% endif %}
 
 {% endfor %}
 <form method="post" action="{{app.get_absolute_url}}process/"0>{% csrf_token %}
-
-<input type="submit" value="Process" name="process" class="button" />
+<input type="submit" value="{% if app.is_processed %}Rep{% else %}P{% endif %}rocess" name="{% if app.is_processed %}re{% endif %}process" class="button" />
 </form>

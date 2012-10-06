@@ -11,12 +11,16 @@
 {{formset.management_form}}
 {% for f in formset.forms %}
 <div class="{{f.prefix}}_container">
-    <tr class="{{f.prefix}}_name_row"><th>{{f.name.label_tag}}</th><td>{{f.name}}</td></tr>
-    <tr class="{{f.prefix}}_type_row"><th>{{f.type.label_tag}}</th><td>{{f.type}}</td></tr>
+    <tr class="{{f.prefix}}-name_row"><th>{{f.name.label_tag}}</th><td>{{f.name}}</td></tr>
+    <tr class="{{f.prefix}}-type_row"><th>{{f.type.label_tag}}</th><td>{{f.type}}</td></tr>
     {% if f.option_fk_name %}
-      <tr class="{{f.prefix}}_option_fk_name_row"><th>{{f.option_fk_name.label_tag}}</th><td>{{f.option_fk_name}}</td></tr>
+      <tr class="{{f.prefix}}-option_fk_name_row"><th>{{f.option_fk_name.label_tag}}</th><td>{{f.option_fk_name}}</td></tr>
+    {% else %}
+        {% if f.instance.type == '5' %}
+      <tr class="{{f.prefix}}-option_fk_name_row"><th>Foreign Key Class</th><td><input id="id_{{f.prefix}}-option_fk_name" type="text" name="{{f.prefix}}-options_fk_name"></td></tr>
+        {% endif %}
     {% endif %}
-    <tr class="{{f.prefix}}_options_row"><th>{{f.options.label_tag}}</th><td><div class="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div></td></tr>
+    <tr class="{{f.prefix}}-options_row"><th>{{f.options.label_tag}}</th><td><div class="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div></td></tr>
     <tr>
     <script>
         $("#id_{{f.prefix}}-type").change(function(){$("#id_{{f.prefix}}-type option:selected").each(function(){yay("{{f.prefix}}", $(this).text());});});
