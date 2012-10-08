@@ -51,6 +51,25 @@ def application_base(request, aid=None):
 
     return direct_to_template(request, 'application/application_edit.html', {'app':app, 'form':form, 'formset':formset})
 
+def application_delete(request, aid=None):
+    app = get_object_or_404(Application, pk=aid)
+    
+    if request.method == 'POST':
+        if not request.POST.get('cancel'):
+            for clas in app.class_set.all():
+                for field in clas.field_set.all():
+                    field.delete()
+                clas.delete()
+            app.delete()
+        return HttpResponseRedirect('applications')
+    return direct_to_template(request, 'application/application_delete.html', {'app':app})               
+
+def class_detail(request, aid, cname):
+    app = get_object_or_404(Application, pk=aid)
+    clas = get_object_or_404(Class, application=app, name=cname)
+
+    return direct_to_template(request, 'class/class_detail.html', {'app':app, 'clas':clas})
+
 def class_edit(request, aid, cname):
     app = get_object_or_404(Application, pk=aid)
     clas = get_object_or_404(Class, application=app, name=cname)
@@ -58,6 +77,7 @@ def class_edit(request, aid, cname):
     formnum = 0 if clas.field_set.count() else 3
     fieldFormSet = inlineformset_factory(Class, Field, form=FieldForm, can_delete=False, extra=formnum)
     formset = fieldFormSet(instance=clas)
+
 
     if request.method == 'POST':
         form = ClassForm(data=request.POST, instance=clas)
@@ -101,14 +121,19 @@ def application_process(request, aid):
      
     first_class=True
     count = 0
-    for c in app.class_set.filter(status=CLASS_STATUS_UNPROCESSED):
+    for c in app.class_set.all():
         if c.field_set.count():
             write_model(c, first_class)
-            write_views(c, first_class)
-            write_forms(c, first_class)
-            write_urls(c, first_class, count == c.field_set.count())
-            write_admin(c, first_class)
-            write_templates(c)
+            if c.create_view:
+                write_views(c, first_class)
+            if c.create_forms:
+                write_forms(c, first_class)
+            if c.create_urls:
+                write_urls(c, first_class, count == c.field_set.count())
+            if c.create_admin:
+                write_admin(c, first_class)
+            if c.create_templates:
+                write_templates(c)
 
             first_class=False
             count = count + 1

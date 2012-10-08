@@ -15,7 +15,7 @@ def write_model(class_object, first_class=False):
     class_name =  class_object.name.lower()
     model_file.write('class %s(models.Model):\n' % class_name.title())
 
-    for field in class_object.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
+    for field in class_object.field_set.all():
         opts =  field.options.split('fk_name=')
 
         if len(opts) == 2:

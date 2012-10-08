@@ -1,0 +1,9 @@
+<h2>{{clas.name}}</h2>
+<a href="{{clas.get_absolute_url}}edit">Edit</a> <a href="{{clas.get_absolute_url}}delete">Delete</a>
+<ul>
+{% for f in clas.field_set.all %}
+    <li>{{f.name}} - {{f.options}} - {{f.get_status_display}}</li>
+{% endfor %}
+</ul>
+
+

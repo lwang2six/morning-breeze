@@ -1,10 +1,10 @@
 
 <h1>{{app.name.title}}</h1>
-{{app.get_status_display}}
+{{app.get_status_display}}  <a href="{{app.get_absolute_url}}edit/">Edit</a> <a href="{{app.get_absolute_url}}delete/">Delete</a>
 
 {% for c in app.class_set.all %}
     <h2>{{c.name}}</h2>
-     {{c.get_status_display}} - <a href="{{app.get_absolute_url}}edit/classes/{{c.name}}">Edit</a><br/>
+     {{c.get_status_display}} - <a href="{{app.get_absolute_url}}classes/{{c.name}}/edit/">Edit</a><br/>
 
     {% if c.field_set.all %}
       Fields:

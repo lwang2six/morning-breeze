@@ -17,7 +17,7 @@ class ApplicationForm(forms.ModelForm):
 class ClassForm(forms.ModelForm):
     class Meta:
         model = Class
-        fields = ['name']
+        exclude = ['application', 'status', 'created']
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -41,6 +41,7 @@ class FieldForm(forms.ModelForm):
                         fk_initial = i.lstrip().rstrip().split('fk_name=')[1]
                     else:
                         initial_options.append(i.lstrip().rstrip())                
+                #empty fk name is being caught in the clean form, cannot be required because if the field type changes, it will throw a validation error
                 self.fields['option_fk_name'] = forms.CharField(label="Foreign Key Class", initial=fk_initial, required=False)
             else:
                 initial_options = [i.lstrip().rstrip() for i in self.instance.options.split(',')]
@@ -100,22 +101,24 @@ class FieldForm(forms.ModelForm):
         stype = self.cleaned_data.get('type')
         def_op = 'default=""'
 
+        required_options = []
+
         #boolean
         if stype == '1':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_BOOL_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for boolean field")
-            def_op = "default=False"
 
         #char
         if stype == '2':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_CHAR_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for char field")
+            required_options.append(FIELD_OPTION_MAX_LENGTH)
 
         #datetime
         if stype == '3':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_DATETIME_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for datetime field")
-            def_op = "default=datetime.datetime.now"
+            required_options.append(FIELD_OPTION_DEFAULT_DATETIME_NOW)
         #file
         if stype == '4':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_FILE_SET):
@@ -130,8 +133,7 @@ class FieldForm(forms.ModelForm):
         if stype == '6':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_INTEGER_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for integer field")
-            def_op = "default=0"
-
+            required_options.append(FIELD_OPTION_DEFAULT_ZERO)
         #image
         if stype == '7':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_IMAGE_SET):
@@ -141,20 +143,24 @@ class FieldForm(forms.ModelForm):
         if stype == '8':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_PINT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for positive integer field")
-            def_op = "default=0"
+            required_options.append(FIELD_OPTION_DEFAULT_ZERO)
         #text
         if stype == '9':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_TEXT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for text field")
         
         x = ''
+        x = self.cleaned_data.get('options') + required_options
+        x = set(x)
 
-        for i in self.cleaned_data.get('options'):
-            if "default" in i:
-                x += '%s, ' % def_op
-            else:  
-                x += '%s, ' % i
-        self.instance.options = x[:-2]
+        out = ''
+        for i in x:
+            if out:
+                out = '%s, %s' % (i, out)
+            else:
+                out = '%s' % i
+
+        self.instance.options = out
         self.clean_option_fk_name()
         return self.instance.options
 

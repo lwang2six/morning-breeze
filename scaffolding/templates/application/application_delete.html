@@ -1,0 +1,9 @@
+
+{% block content %}
+    <h2>Are you sure you want to delete the <a href="{{app.get_absoulte_url}}">{{app.name.title}}</a> app?</h2>
+
+    <form method="post" action="">{% csrf_token %}
+        <input type="submit" value="Delete" name="delete" class="button"/>
+        <input type="submit" value="Cancel" name="cancel" class="button"/>
+    </form>
+{% endblock %}

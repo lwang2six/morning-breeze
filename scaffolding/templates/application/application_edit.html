@@ -1,14 +1,16 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
 
 <form method="post" action="">{% csrf_token %}
+<fieldset>
 {{form.name.label}}{{form.name}}
 <table id='b'>
 {{formset.management_form}}
 {% for f in formset.forms %}
+{% if not forloop.first%}<tr><td>------------------</td></tr>{% endif %}
 {{f}}
 {% endfor %}
 </table>
-
+</fieldset>
 <input type="button" id="one_more" value="Add Another">
 <input type="submit" value="Submit" name="save" class="button" />
 </form>
@@ -18,7 +20,7 @@
       $('#one_more').click(function(){
           var v = +$('#id_class_set-TOTAL_FORMS').val();
           var extras = [];
-          extras.push('<tr><th><label for="id_clas_set-',v,'-name">Class Name:</label></th><td><input id="id_class_set-',v,'-name" type="text" maxlength="30" name="class_set-',v,'-name"><input id="id_class_set-',v,'-application" type="hidden" value="',v,' name="class_set-',v,'-application"><input id="id_class_set-',v,'-id" type="hidden" name="class_set-',v,'-id"></td></tr>')
+          extras.push('<tr><th><label for="id_class_set-',v,'-name">Class Name:</label></th><td><input id="id_class_set-',v,'-name" type="text" name="class_set-',v,'-name" maxlength="30" /></td></tr><tr><th><label for="id_class_set-',v,'-create_view">Views.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_view" id="id_class_set-',v,'-create_view" /></td></tr><tr><th><label for="id_class_set-',v,'-create_urls">Urls.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_urls" id="id_class_set-',v,'-create_urls" /></td></tr><tr><th><label for="id_class_set-',v,'-create_forms">Forms.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_forms" id="id_class_set-',v,'-create_forms" /></td></tr><tr><th><label for="id_class_set-',v,'-create_templates">Templates:</label></th><td><input type="checkbox" name="class_set-',v,'-create_templates" id="id_class_set-',v,'-create_templates" /></td></tr><tr><th><label for="id_class_set-',v,'-create_admin">Admin.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_admin" id="id_class_set-',v,'-create_admin" /><input type="hidden" name="class_set-',v,'-id" id="id_class_set-',v,'-id" /><input type="hidden" name="class_set-',v,'-application" id="id_class_set-',v,'-application" /></td></tr>')
           $('#id_class_set-TOTAL_FORMS').val(+v+1);
           $('tbody tr:last').after(extras.join(''));
       });

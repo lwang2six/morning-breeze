@@ -59,6 +59,11 @@ class Application(models.Model):
 class Class(models.Model):
     name = models.CharField(max_length=30, verbose_name='Class Name')
     application = models.ForeignKey(Application)
+    create_view = models.BooleanField(default=False, verbose_name="views.py")
+    create_urls = models.BooleanField(default=False, verbose_name="urls.py")
+    create_forms = models.BooleanField(default=False, verbose_name="forms.py")
+    create_templates = models.BooleanField(default=False, verbose_name="templates")
+    create_admin = models.BooleanField(default=False, verbose_name="admin.py")
     status = models.CharField(max_length=1, choices=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
@@ -69,7 +74,7 @@ class Class(models.Model):
         return '%s.%s' % (self.application, self.name)
 
     def get_edit_absolute_url(self):
-        return '%sedit/classes/%s/' % (self.application.get_absolute_url(), self.name)
+        return '%sclasses/%s/edit/' % (self.application.get_absolute_url(), self.name)
 
     def get_next_class(self):
         try:
