@@ -34,7 +34,7 @@ def application_base(request, aid=None):
     if aid:
         app = get_object_or_404(Application, pk=aid)
         form = ApplicationForm(instance=app)
-        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=1, can_delete=False)
+        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
   
     if request.method == 'POST':

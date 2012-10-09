@@ -2,7 +2,7 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/scaffold.js"></script>
 <form method="post" action="">{% csrf_token %}
-<table id='b'>
+<table>
 {% for field in form %}
     <tr><th>{{field.label_tag}}</th><td>{{field}}</td></tr>
 {% endfor %} 

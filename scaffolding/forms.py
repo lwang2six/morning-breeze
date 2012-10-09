@@ -17,7 +17,7 @@ class ApplicationForm(forms.ModelForm):
 class ClassForm(forms.ModelForm):
     class Meta:
         model = Class
-        exclude = ['application', 'status', 'created']
+        exclude = ['id','application', 'status', 'created']
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -133,7 +133,7 @@ class FieldForm(forms.ModelForm):
         if stype == '6':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_INTEGER_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for integer field")
-            required_options.append(FIELD_OPTION_DEFAULT_ZERO)
+            #required_options.append(FIELD_OPTION_DEFAULT_ZERO)
         #image
         if stype == '7':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_IMAGE_SET):
@@ -143,7 +143,7 @@ class FieldForm(forms.ModelForm):
         if stype == '8':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_PINT_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for positive integer field")
-            required_options.append(FIELD_OPTION_DEFAULT_ZERO)
+            #required_options.append(FIELD_OPTION_DEFAULT_ZERO)
         #text
         if stype == '9':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_TEXT_SET):

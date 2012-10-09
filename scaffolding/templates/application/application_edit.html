@@ -1,26 +1,76 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
+<style>
+table
+{
+border-collapse:collapse;
+}
 
+th{
+    padding: 5px 5px 5px 20px;
+}
+td{
+    padding: 10px 20px 10px 10px;
+}
+
+fieldset {
+    margin:20px 20px 10px 20px;
+    padding: 0px 10px 10px 10px;
+}
+
+.c_td, .c_th{
+    padding: 10px 20px 0px 10px;
+}
+.s_td, .s_th{
+    padding: 0px 20px 10px 10px;
+}
+
+.tr_gray{
+background-color:#d6d6d6;
+}
+    .class_ul{
+        margin-top: 5px;
+        margin-bottom: 0px
+    }
+</style>
 <form method="post" action="">{% csrf_token %}
-<fieldset>
-{{form.name.label}}{{form.name}}
-<table id='b'>
-{{formset.management_form}}
-{% for f in formset.forms %}
-{% if not forloop.first%}<tr><td>------------------</td></tr>{% endif %}
-{{f}}
-{% endfor %}
-</table>
-</fieldset>
-<input type="button" id="one_more" value="Add Another">
-<input type="submit" value="Submit" name="save" class="button" />
+    <fieldset style="width:430px;">
+        <table style="border:0px none;">
+            <tr><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
+            {{formset.management_form}}
+            {% for f in formset.forms %}
+                <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}"><th class="c_th">{{f.name.label_tag}}:</th><td class="c_td">{{f.name}}</td></tr>
+                <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}>
+                    <th class="s_th">Scaffold:</th>
+                    <td class="s_td">
+                        <ul class="class_ul" style="list-style:none">
+                            <li>{{f.create_view}} {{f.create_view.label_tag}}</li>
+                            <li>{{f.create_urls}} {{f.create_urls.label_tag}}</li>
+                            <li>{{f.create_forms}} {{f.create_forms.label_tag}}</li>
+                            <li>{{f.create_templates}} {{f.create_templates.label_tag}}</li>
+                            <li>{{f.create_admin}} {{f.create_admin.label_tag}}</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>{% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}</tr>
+            {% endfor %}
+        </table>
+    </fieldset>
+    <div style="margin-left:20px;">
+        <input type="button" id="one_more" value="Add Another" />
+        <input type="submit" value="Submit" name="save" class="button" />
+    </div>
 </form>
-{{formset.total_form_count}}
+
 <script>
   $(document).ready(function(){
       $('#one_more').click(function(){
+          var even = ''
           var v = +$('#id_class_set-TOTAL_FORMS').val();
+          if (v%2 === 0){
+            even = ' class="tr_gray" ';
+          }
           var extras = [];
-          extras.push('<tr><th><label for="id_class_set-',v,'-name">Class Name:</label></th><td><input id="id_class_set-',v,'-name" type="text" name="class_set-',v,'-name" maxlength="30" /></td></tr><tr><th><label for="id_class_set-',v,'-create_view">Views.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_view" id="id_class_set-',v,'-create_view" /></td></tr><tr><th><label for="id_class_set-',v,'-create_urls">Urls.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_urls" id="id_class_set-',v,'-create_urls" /></td></tr><tr><th><label for="id_class_set-',v,'-create_forms">Forms.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_forms" id="id_class_set-',v,'-create_forms" /></td></tr><tr><th><label for="id_class_set-',v,'-create_templates">Templates:</label></th><td><input type="checkbox" name="class_set-',v,'-create_templates" id="id_class_set-',v,'-create_templates" /></td></tr><tr><th><label for="id_class_set-',v,'-create_admin">Admin.py:</label></th><td><input type="checkbox" name="class_set-',v,'-create_admin" id="id_class_set-',v,'-create_admin" /><input type="hidden" name="class_set-',v,'-id" id="id_class_set-',v,'-id" /><input type="hidden" name="class_set-',v,'-application" id="id_class_set-',v,'-application" /></td></tr>')
+          extras.push('<tr', even ,'><th class="c_th"><label for="id_class_set-',v,'-name">Class Name</label>:</th><td class="c_td"><input id="id_class_set-',v,'-name" type="text" name="class_set-',v,'-name" maxlength="30" /></td></tr><tr',even,'><th class="s_th">Scaffold:</th><td class="s_td"><ul class="class_ul" style="list-style:none"><li><input type="checkbox" name="class_set-',v,'-create_view" id="id_class_set-',v,'-create_view" /> <label for="id_class_set-',v,'-create_view">Views.py</label></li><li><input type="checkbox" name="class_set-',v,'-create_urls" id="id_class_set-',v,'-create_urls" /> <label for="id_class_set-',v,'-create_urls">Urls.py</label></li><li><input type="checkbox" name="class_set-',v,'-create_forms" id="id_class_set-',v,'-create_forms" /> <label for="id_class_set-',v,'-create_forms">Forms.py</label></li><li><input type="checkbox" name="class_set-',v,'-create_templates" id="id_class_set-',v,'-create_templates" /> <label for="id_class_set-',v,'-create_templates">Templates</label></li><li><input type="checkbox" name="class_set-',v,'-create_admin" id="id_class_set-',v,'-create_admin" /> <label for="id_class_set-',v,'-create_admin">Admin.py</label></li></ul></td></tr><input type="hidden" name="class_set-',v,'-id" id="id_class_set-',v,'-id" /><input type="hidden" name="class_set-',v,'-application" id="id_class_set-',v,'-application" /></td></tr>')
           $('#id_class_set-TOTAL_FORMS').val(+v+1);
           $('tbody tr:last').after(extras.join(''));
       });
