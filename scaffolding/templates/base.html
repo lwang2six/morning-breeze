@@ -1,0 +1,119 @@
+<head>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/scaffold.js"></script>
+
+    <style>
+        table{
+            border-collapse:collapse;
+        }
+
+        tr{
+            background-color:#e8e8e8;
+        }
+        th{
+            padding: 5px 5px 5px 20px;
+        }
+
+        td{
+            padding: 10px 20px 10px 10px;
+        }
+
+        fieldset{
+            margin:20px 20px 10px 20px;
+            padding: 0px 10px 10px 10px;
+        }
+        
+        fieldset .help_text{
+            float:right; 
+            margin-top:10px;
+            margin-right: 20px;
+            font-size:13px;
+            color: #6e6e6e
+        }
+
+        ul{
+            margin-top: 5px;
+            margin-bottom: 0px
+        }
+
+        .back_link{
+            margin-top:20px;
+            margin-left: 15px;
+            font-size:12px;
+        }
+
+        .c_td, .c_th{
+            padding: 10px 20px 0px 10px;
+        }
+
+        .fn_td, .fn_th{
+        }
+
+        .ft_td, .ft_th{
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+        .fo_td, .fo_th{
+            padding-top: 0px;
+        }
+        .s_td, .s_th{
+            padding: 0px 20px 10px 10px;
+        }
+
+        .tr_title{
+            background-color:#FFFFFF;
+            border-bottom: 3px solid #000000;
+        }
+        .tr_gray{
+           background-color:#d6d6d6;
+        }
+
+        .page_title{
+            padding-left: 20px;
+            margin-top:10px;
+            margin-bottom:10px;
+            padding-top:25px;
+        }
+        .page_title span{
+            font-size:36px;
+        }
+
+        .left{
+            width:100px;
+            float: left;
+        }
+
+        .top_left{
+            height:100px; 
+            width:150px; 
+            position:absolute;
+            border-bottom: 3px solid black;
+        }
+        .right{
+            margin-left:150px;
+            border-left: 3px solid black;
+
+        }
+        .top_right{
+            height:100px;
+            border-bottom: 3px solid black;
+        }
+    </style>
+</heads>
+<body>
+    <div class="left">
+        <div class="top_left">
+            {% block top_left_content %}{% endblock %}
+        </div>
+        {% block left_content %}{% endblock %}
+    </div>
+    <div class="right">
+        <div class="top_right">
+            {% block title %}{% endblock %}
+        </div>
+
+        <div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>

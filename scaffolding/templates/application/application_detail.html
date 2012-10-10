@@ -1,4 +1,6 @@
+{% extends "base.html" %}
 
+{% block content %}
 <h1>{{app.name.title}}</h1>
 {{app.get_status_display}}  <a href="{{app.get_absolute_url}}edit/">Edit</a> <a href="{{app.get_absolute_url}}delete/">Delete</a>
 
@@ -19,3 +21,5 @@
 <form method="post" action="{{app.get_absolute_url}}process/"0>{% csrf_token %}
 <input type="submit" value="{% if app.is_processed %}Rep{% else %}P{% endif %}rocess" name="{% if app.is_processed %}re{% endif %}process" class="button" />
 </form>
+
+{% endblock %}

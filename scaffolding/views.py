@@ -73,14 +73,14 @@ def class_detail(request, aid, cname):
 def class_edit(request, aid, cname):
     app = get_object_or_404(Application, pk=aid)
     clas = get_object_or_404(Class, application=app, name=cname)
-    form = ClassForm(instance=clas)
+    form = ClassFieldForm(instance=clas)
     formnum = 0 if clas.field_set.count() else 3
     fieldFormSet = inlineformset_factory(Class, Field, form=FieldForm, can_delete=False, extra=formnum)
     formset = fieldFormSet(instance=clas)
 
 
     if request.method == 'POST':
-        form = ClassForm(data=request.POST, instance=clas)
+        form = ClassFieldForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
         if form.is_valid() and formset.is_valid():
             clas = form.save()

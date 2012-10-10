@@ -1,41 +1,18 @@
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.7.2.min.js"></script>
-<style>
-table
-{
-border-collapse:collapse;
-}
+{% extends "base.html" %}
 
-th{
-    padding: 5px 5px 5px 20px;
-}
-td{
-    padding: 10px 20px 10px 10px;
-}
+{% block top_left_content %}
+    <div class="back_link"><a href="{{app.get_absolute_url}}">back to detail page</a></div>
+{% endblock %}
+{% block title %}
+    <h2 class="page_title">{% if app.id %}editing|<span>{{app.name}}</span>{% else %}new|<span>Application</span>{% endif %}</h2>
+{% endblock %}
 
-fieldset {
-    margin:20px 20px 10px 20px;
-    padding: 0px 10px 10px 10px;
-}
+{% block content %}
 
-.c_td, .c_th{
-    padding: 10px 20px 0px 10px;
-}
-.s_td, .s_th{
-    padding: 0px 20px 10px 10px;
-}
-
-.tr_gray{
-background-color:#d6d6d6;
-}
-    .class_ul{
-        margin-top: 5px;
-        margin-bottom: 0px
-    }
-</style>
 <form method="post" action="">{% csrf_token %}
     <fieldset style="width:430px;">
         <table style="border:0px none;">
-            <tr><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
+            <tr class="tr_title"><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
             {{formset.management_form}}
             {% for f in formset.forms %}
                 <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}"><th class="c_th">{{f.name.label_tag}}:</th><td class="c_td">{{f.name}}</td></tr>
@@ -54,6 +31,9 @@ background-color:#d6d6d6;
                 <tr>{% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}</tr>
             {% endfor %}
         </table>
+        <div class="help_text">
+        *note - models.py will be created by default
+        </div>
     </fieldset>
     <div style="margin-left:20px;">
         <input type="button" id="one_more" value="Add Another" />
@@ -76,3 +56,5 @@ background-color:#d6d6d6;
       });
     });
 </script>
+
+{% endblock %}

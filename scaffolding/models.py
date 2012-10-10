@@ -85,7 +85,7 @@ class Class(models.Model):
             return None
 
 class Field(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, verbose_name="Field Name")
     parent_class = models.ForeignKey(Class)
     type = models.CharField(max_length=1, choices=FIELD_TYPES)
     options = models.TextField(blank=True,null=True)

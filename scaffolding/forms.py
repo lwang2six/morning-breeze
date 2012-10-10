@@ -26,6 +26,18 @@ class ClassForm(forms.ModelForm):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
+class ClassFieldForm(forms.ModelForm):
+    class Meta:
+        model = Class
+        exclude = ['id', 'application', 'create_view', 'create_urls', 'create_forms', 'create_templates', 'create_admin', 'status', 'created']
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        pattern = re.compile(r'^[a-zA-Z]+([\-_]*[a-zA-Z]*)?$')
+        if not pattern.match(name):
+            raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
+        return self.cleaned_data.get('name')
+
 class FieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FieldForm,self).__init__(*args,**kwargs)
