@@ -21,7 +21,7 @@ class ClassForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        pattern = re.compile(r'^[a-zA-Z]+([\-_]*[a-zA-Z]*)?$')
+        pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
@@ -33,7 +33,7 @@ class ClassFieldForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        pattern = re.compile(r'^[a-zA-Z]+([\-_]*[a-zA-Z]*)?$')
+        pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
@@ -87,7 +87,7 @@ class FieldForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        pattern = re.compile(r'^[a-zA-Z]+[a-zA-Z\-_]*[a-zA-Z]+$')
+        pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
             raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')

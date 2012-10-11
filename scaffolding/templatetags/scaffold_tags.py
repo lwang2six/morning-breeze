@@ -1,8 +1,25 @@
+import re
 from django.template import Library
 from scaffolding.utils import *
 from scaffolding.models import *
 
 register = Library()
+
+def app_matches(value):
+    t = r'/applications/\d+/edit/'
+    if re.compile(t).match(value):
+        return True
+    return False
+register.filter(app_matches)
+
+def class_matches(value, arg):
+    t = r"/applications/\d+/classes/%s/edit/" % arg
+    if re.compile(t).match(value):
+        return True
+    return False
+
+register.filter(class_matches)
+
 @register.simple_tag
 def doSome(value, arg, new=False):
     check='checked="checked"'
@@ -13,8 +30,6 @@ def doSome(value, arg, new=False):
             type = value.instance.type
             x = [i.lstrip().rstrip() for i in value.instance.options.split(',')]
             t = [i.split('=')[0] for i in x]
-            print t
-            print u'blank' in t
             if u'blank' in t:
                 bl = check
             if u'choice' in t:

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block top_left_content %}
+    <div class="back_link"><a href="/applications">back to applications listing</a></div>
+{% endblock %}
+{% block title %}<div class="page_title">scaffold application<span>|{{app.name}}</span></div>{% endblock %}
+
 {% block content %}
 <h1>{{app.name.title}}</h1>
 {{app.get_status_display}}  <a href="{{app.get_absolute_url}}edit/">Edit</a> <a href="{{app.get_absolute_url}}delete/">Delete</a>

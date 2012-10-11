@@ -8,5 +8,6 @@ urlpatterns = patterns('scaffolding.views',
     (r'^applications/(?P<aid>\d+)/$', 'application_detail'),
     (r'^applications/(?P<aid>\d+)/process/$', 'application_process'),
     (r'^applications/new/$', 'application_new'),
+    (r'^applications/(?P<aid>\d+)/delete/$', 'application_delete'),
     (r'^applications/$', 'application_list'),
 )

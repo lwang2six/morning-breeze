@@ -73,6 +73,8 @@ class Class(models.Model):
     def __unicode__(self):
         return '%s.%s' % (self.application, self.name)
 
+    def get_absolute_url(self):
+        return '%sclasses/%s/' % (self.application.get_absolute_url(), self.name)
     def get_edit_absolute_url(self):
         return '%sclasses/%s/edit/' % (self.application.get_absolute_url(), self.name)
 

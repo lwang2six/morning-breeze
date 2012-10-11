@@ -3,10 +3,15 @@
     <script type="text/javascript" src="{{ MEDIA_URL }}js/scaffold.js"></script>
 
     <style>
+        a{
+            text-decoration:none;
+        }
         table{
             border-collapse:collapse;
         }
-
+        form{
+            margin:0px;
+        }
         tr{
             background-color:#e8e8e8;
         }
@@ -19,7 +24,7 @@
         }
 
         fieldset{
-            margin:20px 20px 10px 20px;
+            margin-bottom:10px;
             padding: 0px 10px 10px 10px;
         }
         
@@ -37,9 +42,21 @@
         }
 
         .back_link{
-            margin-top:20px;
-            margin-left: 15px;
+            padding: 22%;
             font-size:12px;
+            text-align:center;
+        }
+
+        .edit{
+            font-size:14px;
+            padding-left:15px;
+        }
+        .edit_active{
+            pointer-events:none;
+            cursor:default;
+            color:#000;
+            font-weight:bold;
+            padding-left:15px;
         }
 
         .c_td, .c_th{
@@ -73,6 +90,8 @@
             margin-top:10px;
             margin-bottom:10px;
             padding-top:25px;
+            font-size:23px;
+            font-weight:bold;
         }
         .page_title span{
             font-size:36px;
@@ -81,9 +100,18 @@
         .left{
             width:100px;
             float: left;
+            font-size:14px;
+            border-right: 3px solid black;
+            padding-right:50px;
+            padding-bottom:50px;
         }
 
+        .left_content{
+            float: left;
+            margin-top:110px;
+        }
         .top_left{
+            float:left;
             height:100px; 
             width:150px; 
             position:absolute;
@@ -92,28 +120,38 @@
         .right{
             margin-left:150px;
             border-left: 3px solid black;
+            padding-bottom:50px;
 
+        }
+        .right_content{
+            padding:30px;
         }
         .top_right{
             height:100px;
             border-bottom: 3px solid black;
         }
+
     </style>
 </heads>
 <body>
-    <div class="left">
+  <div >
+    <div  class="left">
         <div class="top_left">
             {% block top_left_content %}{% endblock %}
         </div>
+        <div class="left_content">
         {% block left_content %}{% endblock %}
+        </div>
     </div>
-    <div class="right">
+    <div  class="right">
         <div class="top_right">
             {% block title %}{% endblock %}
         </div>
 
-        <div>
+        <div class="right_content">
             {% block content %}{% endblock %}
         </div>
     </div>
+  </div>
+
 </body>

@@ -13,11 +13,11 @@ def application_list(request):
     apps = Application.objects.filter(status=APPLICATION_STATUS_UNPROCESSED)
     processed = Application.objects.filter(status=APPLICATION_STATUS_PROCESSED)
 
-    return direct_to_template(request, 'application/application_list.html', {'apps':apps,'processed':processed})
+    return direct_to_template(request, 'application/application_list.html', {'apps':apps,'processed':processed, 'path':request.path})
 
 def application_detail(request, aid):
     app = get_object_or_404(Application, pk=aid)
-    return direct_to_template(request, 'application/application_detail.html',{'app':app})
+    return direct_to_template(request, 'application/application_detail.html',{'app':app, 'path':request.path})
 
 def application_edit(request, aid):
     return application_base(request, aid)
@@ -36,7 +36,7 @@ def application_base(request, aid=None):
         form = ApplicationForm(instance=app)
         classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
-  
+    print request.path
     if request.method == 'POST':
         form = ApplicationForm(data=request.POST, instance=app)
         formset = classFormSet(request.POST, instance=app)
@@ -49,7 +49,7 @@ def application_base(request, aid=None):
                     return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
             return HttpResponseRedirect(app.get_absolute_url())
 
-    return direct_to_template(request, 'application/application_edit.html', {'app':app, 'form':form, 'formset':formset})
+    return direct_to_template(request, 'application/application_edit.html', {'app':app, 'form':form, 'formset':formset, 'path':request.path})
 
 def application_delete(request, aid=None):
     app = get_object_or_404(Application, pk=aid)
@@ -62,13 +62,13 @@ def application_delete(request, aid=None):
                 clas.delete()
             app.delete()
         return HttpResponseRedirect('applications')
-    return direct_to_template(request, 'application/application_delete.html', {'app':app})               
+    return direct_to_template(request, 'application/application_delete.html', {'app':app, 'path':request.path})               
 
 def class_detail(request, aid, cname):
     app = get_object_or_404(Application, pk=aid)
     clas = get_object_or_404(Class, application=app, name=cname)
 
-    return direct_to_template(request, 'class/class_detail.html', {'app':app, 'clas':clas})
+    return direct_to_template(request, 'class/class_detail.html', {'app':app, 'clas':clas, 'path':request.path})
 
 def class_edit(request, aid, cname):
     app = get_object_or_404(Application, pk=aid)
@@ -92,7 +92,7 @@ def class_edit(request, aid, cname):
                
             return HttpResponseRedirect(app.get_absolute_url())
 
-    return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'form':form, 'formset':formset})
+    return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'path':request.path, 'form':form, 'formset':formset})
 
 def class_delete(request, aid, cname):
     app = get_object_or_404(Application, pk=aid)
@@ -104,7 +104,7 @@ def class_delete(request, aid, cname):
                 field.delete()
             clas.delete()
             return HttpResponseRedirect(app.get_absolute_url())
-    return direct_to_template(request, 'class/class_delete.html', {'app':app, 'clas':clas})
+    return direct_to_template(request, 'class/class_delete.html', {'app':app, 'clas':clas, 'path':request.path})
 
 def application_process(request, aid):
     app = get_object_or_404(Application, pk=aid)

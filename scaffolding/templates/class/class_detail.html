@@ -1,9 +1,23 @@
-<h2>{{clas.name}}</h2>
+{% extends "base.html" %}
+{% load scaffold_tags %}
+{% block top_left_content %}
+    <div class="back_link"><a href="{{app.get_absolute_url}}">back to application</a></div>
+{% endblock %}
+{% block title %}<div class="page_title">scaffold class<span>|{{clas.name}}</span></div>{% endblock %}
+
+{% block left_content %}
+    {% for c in app.class_set.all %}
+        <a {% if path|class_matches:c.name %}class="edit_active"{% else %}class="edit"{% endif %} href="{{c.get_absolute_url}}">{{c.name}}</a>
+    {% endfor %}
+{% endblock %}
+
+{% block content %}
+<h2>Fields</h2>
 <a href="{{clas.get_absolute_url}}edit">Edit</a> <a href="{{clas.get_absolute_url}}delete">Delete</a>
 <ul>
 {% for f in clas.field_set.all %}
     <li>{{f.name}} - {{f.options}} - {{f.get_status_display}}</li>
 {% endfor %}
 </ul>
-
+{% endblock %}
 
