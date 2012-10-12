@@ -50,7 +50,7 @@
         <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-options_row">
             <th class="fo_th">{{f.options.label_tag}}: </th>
             <td class="fo_td">
-                <div class="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div>
+                <div id="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div>
             </td>
         </tr>
         <tr>
