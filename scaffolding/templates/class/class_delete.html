@@ -1,9 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}<div class="page_title">delete<span>|{{clas.name}}</span></div>{% endblock %}
+
+{% block top_left_content %}
+    <div class="back_link"><a href="{{app.get_absolute_url}}">back to application</a></div>
+{% endblock %}
+
+{% block left_content %}
+    {% include "application/includes/edit_left_content.html" %}
+
+{% endblock %}
 
 {% block content %}
-    <div>
-        <h2>Are you sure you want to delete <em>{{clas.name}}</em> class and all it's fields?</h2>
-    </div>
     <form method="post" action="">{% csrf_token %}
+        <fieldset>
+        <div>
+            <h2>Are you sure you want to delete <em>{{clas.name}}</em> class and all it's fields?</h2>
+        </div>
+        </fieldset>
         <input type="submit" value="Delete" name="delete" class="button"/>
         <input type="submit" value="Cancel" name="cancel" class="button"/>
     </form>

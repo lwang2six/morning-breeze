@@ -100,4 +100,11 @@ class Field(models.Model):
     def __unicode__(self):
         return '%s.%s' % (self.parent_class, self.name)
 
+    def get_options(self):
+        x = self.options.split(',')
+        opt = []
+        for i in x:
+            if not 'fk_name' in i:
+                opt.append(i)
+        return opt
 

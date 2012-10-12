@@ -1,0 +1,9 @@
+{% load scaffold_tags %}
+    <div style="margin-top:15px;">
+        <ul>
+            <li class="app_title"><a {% if path|app_matches %}class="active"{% endif %} href="{{app.get_absolute_url}}">{{app.name|truncate_chars:8}}</a></li>
+        {% for c in app.class_set.all %}
+            <li class="class_title"><a {% if path|class_matches:c.name %}class="active"{% endif %} href="{{c.get_absolute_url}}">{{c.name|truncate_chars:11}}</a></li>
+        {% endfor %}
+        </ul>
+    </div>

@@ -1,18 +1,42 @@
 {% extends "base.html" %}
 
+{% block title%}
+    <div class="page_title">scaffolding<span>|CRUD Made Eazy</span></div>
+{% endblock%}
+
+{% block top_left_content %}
+<div class="back_link">PHASE I</div>
+{% endblock %}
+
 {% block content %}
-<h2>Un-Processed Apps:</h2>
-<ul>
-{% for app in apps %}
-  <li><a href="{{app.get_absolute_url}}">{{app.name.title}}</a> <a href="{{app.get_absolute_url}}edit">Edit</a>  <a href="{{app.get_absolute_url}}delete/">Delete</a></li>
-{% endfor %}
-</ul>
-
-
-<h2>Processed Apps</h2>
-<ul>
-{% for app in processed %}
-  <li><a href="{{app.get_absolute_url}}">{{app.name.title}}</a> <a href="{{app.get_absolute_url}}edit">Edit</a>  <a href="{{app.get_absolute_url}}delete/">Delete</a></li>
-{% endfor %}
-</ul>
+    <div class="section">
+        <div class="content_title"><a href="/applications/new/">Make New Apps</a></div>
+        <p class="help_text">create new applications and classes to be scaffolded.</p>
+    </div>
+    <div class="section">
+        <div class="content_title">Un-Processed Apps</div>
+        <p class="help_text">applications and classes that has yet to finshed being built and/or has not been processed.</p>
+        <ul>
+            {% for app in apps %}
+                <li>
+                    <a class="title" href="{{app.get_absolute_url}}">{{app.name.title}}</a> 
+                    <a class="edit" href="{{app.get_absolute_url}}edit">Edit</a>  
+                    <a class="delete" href="{{app.get_absolute_url}}delete/">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="section">
+        <div class="content_title">Processed Apps</div>
+        <p class="help_text">applications and classes that has been previously scaffolded.</p>
+        <ul>
+            {% for app in processed %}
+                <li>
+                    <a class="title" href="{{app.get_absolute_url}}">{{app.name.title}}</a> 
+                    <a class="edit" href="{{app.get_absolute_url}}edit">Edit</a>  
+                    <a class="delete" href="{{app.get_absolute_url}}delete/">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

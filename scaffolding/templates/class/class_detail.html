@@ -6,18 +6,29 @@
 {% block title %}<div class="page_title">scaffold class<span>|{{clas.name}}</span></div>{% endblock %}
 
 {% block left_content %}
-    {% for c in app.class_set.all %}
-        <a {% if path|class_matches:c.name %}class="edit_active"{% else %}class="edit"{% endif %} href="{{c.get_absolute_url}}">{{c.name}}</a>
-    {% endfor %}
+    {% include "application/includes/left_content.html" %}
 {% endblock %}
 
 {% block content %}
-<h2>Fields</h2>
-<a href="{{clas.get_absolute_url}}edit">Edit</a> <a href="{{clas.get_absolute_url}}delete">Delete</a>
-<ul>
+<div class="content_title">Fields</div>
+
+
 {% for f in clas.field_set.all %}
-    <li>{{f.name}} - {{f.options}} - {{f.get_status_display}}</li>
+    <div class="field">
+        <div><span class="field_name">{{f.name}}</span> - {{f.get_type_display}} - {{f.get_status_display}}</div>
+        <div class="field_options">Options:</div>
+        <div class="field_option_list">
+            <ul>
+                {% for option in f.get_options %}
+                    <li>{{option}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endfor %}
-</ul>
+
+<div style="margin-top:50px; margin-left:20px;">
+<a class="button" href="{{clas.get_absolute_url}}edit">Edit</a> <a class="button" href="{{clas.get_absolute_url}}delete">Delete</a>
+</div>
 {% endblock %}
 

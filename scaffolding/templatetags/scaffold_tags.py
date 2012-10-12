@@ -5,20 +5,31 @@ from scaffolding.models import *
 
 register = Library()
 
-def app_matches(value):
-    t = r'/applications/\d+/edit/'
-    if re.compile(t).match(value):
+def matches(value, arg):
+    if re.compile(arg).match(value):
         return True
     return False
+register.filter(matches)
+
+def app_matches(value):
+    t = r'/applications/\d+/$'
+    return matches(value, t)
 register.filter(app_matches)
 
 def class_matches(value, arg):
-    t = r"/applications/\d+/classes/%s/edit/" % arg
-    if re.compile(t).match(value):
-        return True
-    return False
-
+    t = r"/applications/\d+/classes/%s/$" % arg
+    return matches(value, t)
 register.filter(class_matches)
+
+def app_edit_matches(value):
+    t = r'/applications/\d+/edit/$'
+    return matches(value, t)
+register.filter(app_edit_matches)
+
+def class_edit_matches(value, arg):
+    t = r"/applications/\d+/classes/%s/edit/$" % arg
+    return matches(value, t)
+register.filter(class_edit_matches)
 
 @register.simple_tag
 def doSome(value, arg, new=False):
@@ -80,4 +91,12 @@ def doSome(value, arg, new=False):
 
 register.simple_tag(doSome)
 
+
+def truncate_chars(value, arg):
+    if int(arg)+2 < len(value):
+        return '%s...' % value[:arg]
+    else:
+        return value
+
+register.filter(truncate_chars)
 

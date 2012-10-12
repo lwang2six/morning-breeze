@@ -1,0 +1,13 @@
+{% load scaffold_tags %} 
+
+   {% if app %}
+        <h3>Edit:</h3>
+        <ul>
+            <li class="app_title"><a {% if path|app_edit_matches %}class="active"{% endif %} href="{{app.get_absolute_url}}edit/">{{app.name|truncate_chars:8}}</a></li>
+        {% for c in app.class_set.all %}
+            <li class="class_title"><a {% if path|class_edit_matches:c.name %}class="active"{% endif %} href="{{c.get_edit_absolute_url}}">{{c.name|truncate_chars:11}}</a></li>
+        {% endfor %}
+        </ul>
+
+        <h3><a {% if path|matches:"^/applications/\d+/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
+    {% endif %}

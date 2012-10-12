@@ -10,11 +10,7 @@
 {% endblock %}
 
 {% block left_content %}
-    <h3>Edit:</h3>
-        <a class="edit{% if path|app_matches %}_active{% endif %}" href="{{app.get_absolute_url}}edit/">{{app.name}}</a>
-    {% for c in app.class_set.all %}
-        <a {% if path|class_matches:c.name %}class="edit_active"{% else %}class="edit"{% endif %} href="{{c.get_edit_absolute_url}}">{{c.name}}</a>
-    {% endfor %}
+    {% include "application/includes/edit_left_content.html" %}
 {% endblock %}
 
 
@@ -72,7 +68,7 @@
 </fieldset>
 
 <div style="margin-left:20px;">
-<input type="button" id="one_more"  name="add_another" value="Add Another">
+<input type="button" id="one_more"  name="add_another" class="button" value="Add Another">
 <input type="submit" value="Submit" name="save" class="button" />
 {% if clas.get_next_class %}
     <input type="submit" value="Continue" name="continue" class="button" />
