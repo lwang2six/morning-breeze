@@ -8,6 +8,9 @@
             <li class="class_title"><a {% if path|class_edit_matches:c.name %}class="active"{% endif %} href="{{c.get_edit_absolute_url}}">{{c.name|truncate_chars:11}}</a></li>
         {% endfor %}
         </ul>
-
-        <h3><a {% if path|matches:"^/applications/\d+/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
+        {% if clas %}
+            <h3><a {% if path|matches:"^/applications/\d+/classes/[a-zA-Z]+([\-_][a-zA-Z]+)*/delete/$" %}class="active"{% endif %}href="{{clas.get_absolute_url}}delete/">Delete</a></h3>
+        {% else %}
+            <h3><a {% if path|matches:"^/applications/\d+/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
+        {% endif %}
     {% endif %}
