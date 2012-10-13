@@ -36,7 +36,7 @@ def application_base(request, aid=None):
         form = ApplicationForm(instance=app)
         classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
-    print request.path
+
     if request.method == 'POST':
         form = ApplicationForm(data=request.POST, instance=app)
         formset = classFormSet(request.POST, instance=app)
