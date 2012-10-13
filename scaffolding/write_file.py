@@ -183,7 +183,7 @@ def write_template_base(class_object):
     temp_root = './%s/templates/%s/%s_' % (class_object.application.name.lower(), class_name, class_name)
     temp_file = open('%sbase.html' % temp_root, 'w')
 
-    temp_file.write('<head>'\n)
+    temp_file.write('<head>\n')
     x = '    <title>%s' % class_name
     x +=' {% if object %}- {{object}}{% endif %}</title>\n'
     temp_file.write(x)
@@ -197,7 +197,7 @@ def write_template_base(class_object):
 def write_template_new(class_object):
     class_name = class_object.name.lower()
     temp_root = './%s/templates/%s/%s_' % (class_object.application.name.lower(), class_name, class_name)
-    temp_file = open('%slist.html' % (temp_root), 'w')
+    temp_file = open('%snew.html' % (temp_root), 'w')
 
     x = '{% '
     x += 'extends "%s/%s_base.html"' % (class_name, class_name)
