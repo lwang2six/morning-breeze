@@ -183,15 +183,15 @@ def write_template_base(class_object):
     temp_root = './%s/templates/%s/%s_' % (class_object.application.name.lower(), class_name, class_name)
     temp_file = open('%sbase.html' % temp_root, 'w')
 
-    temp_file.write('<head>')
+    temp_file.write('<head>'\n)
     x = '    <title>%s' % class_name
-    x +=' {% if object %}- {{object}}{% endif %}</title>'
+    x +=' {% if object %}- {{object}}{% endif %}</title>\n'
     temp_file.write(x)
-    temp_file.write('</head>')
-    temp_file.write('<body>')
+    temp_file.write('</head>\n')
+    temp_file.write('<body>\n')
     temp_file.write('    {% block content %}\n')
     temp_file.write('    {% endblock content %}\n')
-    temp_file.write('</body>')
+    temp_file.write('</body>\n')
     temp_file.close()
 
 def write_template_new(class_object):

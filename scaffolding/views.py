@@ -129,8 +129,6 @@ def application_process(request, aid):
             if c.create_forms:
                 write_forms(c, first_class)
             if c.create_urls:
-                print count
-                print c.field_set.count()
                 write_urls(c, first_class, count == c.field_set.count())
             if c.create_admin:
                 write_admin(c, first_class)
