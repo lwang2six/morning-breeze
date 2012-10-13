@@ -134,12 +134,14 @@ def write_urls(class_object, first_class=False, last_class=False):
     app_name = class_object.application.name.lower()
     file_name = './%s/urls.py' % app_name
     write_type = 'a'
-    first_line = '\n'
+    first_line = '\nurlpatterns += patterns('',\n'
 
     if first_class:
         write_type = 'w'
         first_line = "from django.conf.urls.defaults import *\n\n" +\
                      "urlpatterns = patterns('',\n"
+
+        
 
     url_file = open(file_name, write_type)
     url_file.write(first_line)
@@ -149,9 +151,7 @@ def write_urls(class_object, first_class=False, last_class=False):
     url_file.write("    (r'^%s/(?P<oid>\d+)/delete/$', '%s.views.%s_delete'),\n" % (class_name, app_name, class_name))
     url_file.write("    (r'^%s/(?P<oid>\d+)/$', '%s.views.%s_detail'),\n" % (class_name, app_name, class_name))
     url_file.write("    (r'^%s/$', '%s.views.%s_list'),\n" % (class_name, app_name, class_name))
-
-    if last_class:
-        url_file.write(')')
+    url_file.write(')\n')
 
     url_file.close()
 

@@ -120,7 +120,7 @@ def application_process(request, aid):
         os.makedirs('./%s/templates' % app_name)
      
     first_class=True
-    count = 0
+    count = 1
     for c in app.class_set.all():
         if c.field_set.count():
             write_model(c, first_class)
@@ -129,6 +129,8 @@ def application_process(request, aid):
             if c.create_forms:
                 write_forms(c, first_class)
             if c.create_urls:
+                print count
+                print c.field_set.count()
                 write_urls(c, first_class, count == c.field_set.count())
             if c.create_admin:
                 write_admin(c, first_class)
