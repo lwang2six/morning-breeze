@@ -1,4 +1,7 @@
 import os
+import commands
+from django.db import connections
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
@@ -147,3 +150,62 @@ def application_process(request, aid):
     app.save()
 
     return HttpResponseRedirect('/applications/')
+    
+    
+def process_sql(request):
+    cur = connections['default'].cursor()
+    cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
+    cur.execute('CREATE DATABASE scaffold_temp;')
+    
+    x = commands.getoutput('python manage.py inspectdb --database scaffold_temp')
+    have_class = False
+    clas = extra = ''
+    
+    app = Application(name='Unknown')
+    app.save()
+    for i in x.split('\n'):
+        if 'class' in i and '(models.Model):' in i:
+            have_class = True
+            if extra:
+                #current clas would be refering to the previous one not the new one.            
+                clas.extras = extra
+                clas.save()
+            extra = ''
+            c_name = i.replace('class','').replace('(models.Model):','').lstrip().rstrip()
+            clas = Class(name=c_name, applicaiton=app)
+            clas.save()
+        else:
+            if have_class and not i.startswith('#'):
+                f = i.lstrip().rstrip().split('models.')
+                if len(f) > 1:
+                    name = f[0].lstrip().rstrip().split('=')[0]
+                    type, opt = f[1].lstrip().rstrip().split('(')
+                    opt = opt[:-1]
+                    opt_list = opt.split(',')
+                    opt = ''
+                    for i in opt_list:
+                        if '=' in i:
+                            if type == 'ForeignKey':
+                                z = 'fk=%s' % i
+                            else:
+                                z = i
+                            if opt:
+                                opt = '%s, %s' % (opt, z)
+                            else:
+                                opt = z
+
+                                       
+                    field = Field(name=name, parent_class=clas, type=FIELD_TYPE_DIC[type], options=opt)
+                    field.save()
+                elif len(f) == 1 and not i.startswith('#'):
+                    if extra:
+                        extra = '%s\n%s' % (extra, i)
+                    else:
+                        extra = i
+    clas.extras = extra
+    clas.save()                        
+                        
+
+            
+    return direct_to_template(request, 'application/hello.html', {'databases':x})
+

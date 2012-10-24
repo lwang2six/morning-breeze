@@ -10,6 +10,7 @@ FIELD_OPTION_MAX_LENGTH = 'max_length=255'
 FIELD_OPTION_NULL = 'null=True'
 FIELD_OPTION_RELATED_NAME = 'related_name="some_special_name"'
 FIELD_OPTION_UNIQUE = 'unique=False'
+FIELD_OPTION_UPLOADTO = 'upload_to="."'
 FIELD_OPTION_VERBOSE_NAME = 'verbose_name="display name"'
 
 FIELD_OPTIONS_DEFAULT = (

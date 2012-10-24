@@ -8,7 +8,7 @@ def write_model(class_object, first_class=False):
 
     if first_class:
         write_type = 'w'
-        first_line = 'from django.db import models\n\n'
+        first_line = 'import datetime\nfrom django.db import models\n\n'
     model_file = open(file_name, write_type)
     model_file.write(first_line)
 
@@ -30,7 +30,7 @@ def write_model(class_object, first_class=False):
             if opts[-1] == ',':
                 opts = opts[:-1]
             
-        model_file.write('    %s= models.%s(%s)\n'% (field.name.lower(), field.get_type_display(), opts))
+        model_file.write('    %s = models.%s(%s)\n'% (field.name.lower(), field.get_type_display(), opts))
 
     model_file.write('\n    def __unicode__(self):\n')
     x = "        return '%s - %s' % (self.id, self."

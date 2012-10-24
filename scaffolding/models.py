@@ -42,6 +42,13 @@ FIELD_TYPES = (
     (FIELD_TYPE_POSITIVEINTEGER, 'PositiveIntegerField'),
     (FIELD_TYPE_TEXT, 'TextField'),
 )
+
+FIELD_TYPES_DIC = {'BooleanField':FIELD_TYPE_BOOLEAN, 'CharField':FIELD_TYPE_CHAR, 
+                   'DateTimeField':FIELD_TYPE_DATETIME, 'FileField':FIELD_TYPE_FILE, 
+                   'ForeignKey':FIELD_TYPE_FOREIGNKEY, 'IntegerField':FIELD_TYPE_INTEGER,
+                   'ImageField':FIELD_TYPE_IMAGE,'PositiveIntegerField':FIELD_TYPE_POSITIVEINTEGER, 
+                   'TextField':FIELD_TYPE_TEXT}
+                      
 class Application(models.Model):
     name = models.CharField(max_length=30, verbose_name='Application Name')
     status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
@@ -64,8 +71,12 @@ class Class(models.Model):
     create_forms = models.BooleanField(default=False, verbose_name="forms.py")
     create_templates = models.BooleanField(default=False, verbose_name="templates")
     create_admin = models.BooleanField(default=False, verbose_name="admin.py")
+    extras = models.TextField(blank=True, null=True)
+    
     status = models.CharField(max_length=1, choices=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    
+   
 
     class Meta: 
         unique_together=(('name', 'application'),)
@@ -91,6 +102,7 @@ class Field(models.Model):
     parent_class = models.ForeignKey(Class)
     type = models.CharField(max_length=1, choices=FIELD_TYPES)
     options = models.TextField(blank=True,null=True)
+    
     status = models.CharField(max_length=1, choices=FIELD_STATUSES, default=FIELD_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
  

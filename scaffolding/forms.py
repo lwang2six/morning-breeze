@@ -135,6 +135,7 @@ class FieldForm(forms.ModelForm):
         if stype == '4':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_FILE_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for file field")
+            required_options.append(FIELD_OPTION_UPLOADTO)
 
         #fk change to classes
         if stype == '5':
@@ -150,6 +151,7 @@ class FieldForm(forms.ModelForm):
         if stype == '7':
             if not set(self.cleaned_data.get('options')).issubset(FIELD_OPTIONS_IMAGE_SET):
                 raise forms.ValidationError("One of the selected options is not allowed for image field")
+            required_options.append(FIELD_OPTION_UPLOADTO)
 
         #positiveinteger
         if stype == '8':

@@ -10,4 +10,5 @@ urlpatterns = patterns('scaffolding.views',
     (r'^applications/new/$', 'application_new'),
     (r'^applications/(?P<aid>\d+)/delete/$', 'application_delete'),
     (r'^applications/$', 'application_list'),
+    (r'^database/$', 'process_sql'),
 )
