@@ -19,25 +19,25 @@
 <form method="post" action="">{% csrf_token %}
 <fieldset style="width:375px;">
 <table>
-{% for field in form %}
-    <tr class="tr_title"><th>{{field.label_tag}}: </th><td>{{field}}</td></tr>
-{% endfor %} 
+    {% if form.name.errors %}<tr class="error" style="background-color:#FFF;"><th></th><td>{{form.name.errors}}</td></tr>{% endif %}
+    <tr class="tr_title"><th>{{form.name.label_tag}}: </th><td>{{form.name}}</td></tr>
+ 
 {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
 {{formset.management_form}}
 {% for f in formset.forms %}
 <div class="{{f.prefix}}_container">
     {% if f.non_field_errors %}<tr><th>Errors</th><td> {{ f.non_field_errors}}</td></tr>{% endif %}
-    {% if f.name.errors %}<tr class="error"><th></th><td>{{f.name.errors}}</td></tr>{% endif %}
+    {% if f.name.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray {% endif %}"><th></th><td>{{f.name.errors}}</td></tr>{% endif %}
     <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-name_row"><th class="fn_th">{{f.name.label_tag}}: </th><td class="fn_td">{{f.name}}</td></tr>
-    {% if f.type.errors %}<tr class="error"><th></th><td>{{f.type.errors}}</td></tr>{% endif %}
+    {% if f.type.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.type.errors}}</td></tr>{% endif %}
     <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-type_row"><th class="ft_th">{{f.type.label_tag}}: </th><td class="ft_td">{{f.type}}</td></tr>
     {% if f.option_fk_name %}
-      {% if f.option_fk_name.errors %}<tr class="error"><th></th><td>{{f.option_fk_name.errors}}</td></tr>{% endif %}
+      {% if f.option_fk_name.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.option_fk_name.errors}}</td></tr>{% endif %}
       <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-option_fk_name_row"><th>{{f.option_fk_name.label_tag}}: </th><td>{{f.option_fk_name}}</td></tr>
     {% else %}
         {% if f.instance.type == '5' %}
-          {% if f.option_fk_name.errors %}<tr class="error"><th></th><td>{{f.option_fk_name.errors}}</td></tr>{% endif %}
+          {% if f.option_fk_name.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.option_fk_name.errors}}</td></tr>{% endif %}
           <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-option_fk_name_row">
             <th>Foreign Key Class: </th>
             <td>
@@ -46,7 +46,7 @@
           </tr>
         {% endif %}
     {% endif %}
-    {% if f.options.errors %}<tr class="error"><th></th><td>{{f.options.errors}}</td></tr>{% endif %}
+    {% if f.options.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.options.errors}}</td></tr>{% endif %}
         <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-options_row">
             <th class="fo_th">{{f.options.label_tag}}: </th>
             <td class="fo_td">

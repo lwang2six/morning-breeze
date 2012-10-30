@@ -21,10 +21,12 @@
 <form method="post" action="">{% csrf_token %}
     <fieldset style="width:430px;">
         <table style="border:0px none;">
+            {% if form.name.errors %}<tr class="error" style="background-color:#FFF"><th></th><td>{{form.name.errors}}</td></tr>{% endif %}
             <tr class="tr_title"><th>{{form.name.label_tag}}:</th><td>{{form.name}}</td></tr>
             {{formset.management_form}}
             {% for f in formset.forms %}
-                <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}"><th class="c_th">{{f.name.label_tag}}:</th><td class="c_td">{{f.name}}</td></tr>
+                {% if f.name.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.name.errors}}</td></tr>{% endif %}
+                <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}><th class="c_th">{{f.name.label_tag}}:</th><td class="c_td">{{f.name}}</td></tr>
                 <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray"{% endif %}>
                     <th class="s_th">Scaffold:</th>
                     <td class="s_td">

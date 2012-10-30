@@ -16,17 +16,22 @@
 {% for f in clas.field_set.all %}
     <div class="field">
         <div><span class="field_name">{{f.name}}</span> - {{f.get_type_display}} - {{f.get_status_display}}</div>
-        <div class="field_options">Options:</div>
-        <div class="field_option_list">
-            <ul>
-                {% for option in f.get_options %}
-                    <li>{{option}}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% if f.options %}
+            <div class="field_options">Options:</div>
+            <div class="field_option_list">
+                    <ul>
+                        {% for option in f.get_options %}
+                            <li>{{option}}</li>
+                        {% endfor %}
+                    </ul>
+            </div>
+        {% endif %}
     </div>
 {% endfor %}
-
+<div class="content_title">Extras</div>
+        {% if clas.extras %}
+            <pre>{{clas.extras}}</pre>
+        {% endif %}
 <div style="margin-top:50px; margin-left:20px;">
 <a class="button" href="{{clas.get_absolute_url}}edit">Edit</a> <a class="button" href="{{clas.get_absolute_url}}delete">Delete</a>
 </div>

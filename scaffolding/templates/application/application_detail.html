@@ -23,7 +23,7 @@
     <div class="content_title">Classes:</div>
     {% for c in app.class_set.all %}
         <span class="class_title"><a href="{{c.get_absolute_url}}">{{c.name}}</a></span> - <span class="status">{{c.get_status_display}}</span>
-        <a class="edit" href="{{app.get_absolute_url}}classes/{{c.name}}/delete/">Edit</a>
+        <a class="edit" href="{{app.get_absolute_url}}classes/{{c.name}}/edit/">Edit</a>
         <a class="delete" href="{{app.get_absolute_url}}classes/{{c.name}}/delete/">Delete</a>
         <div class="detail_field_list">
         {% if c.field_set.all %}
@@ -35,6 +35,7 @@
             </ul>
         {% endif %}
         </div>
+
     {% endfor %}
     
 </div>

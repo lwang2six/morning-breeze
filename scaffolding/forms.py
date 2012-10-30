@@ -1,5 +1,6 @@
 import re
 from django import forms
+from django.conf import settings
 from django.forms.fields import MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple, HiddenInput
 
@@ -14,6 +15,13 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields = ['name']
 
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
+        if not pattern.match(name):
+            raise forms.ValidationError('Application names should only contain letters, underscore and dash. It should also end with a letter')
+        return self.cleaned_data.get('name')
+
 class ClassForm(forms.ModelForm):
     class Meta:
         model = Class
@@ -23,7 +31,7 @@ class ClassForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
-            raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
+            raise forms.ValidationError('Class names should only contain letters, underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
 class ClassFieldForm(forms.ModelForm):
@@ -35,7 +43,7 @@ class ClassFieldForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
-            raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
+            raise forms.ValidationError('Class names should only contain letters, underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
 class FieldForm(forms.ModelForm):
@@ -89,7 +97,7 @@ class FieldForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         pattern = re.compile(r'^[a-zA-Z]+([\-_][a-zA-Z]+)*$')
         if not pattern.match(name):
-            raise forms.ValidationError('Field names should only contain letters underscore and dash. It should also end with a letter')
+            raise forms.ValidationError('Field names should only contain letters, underscore and dash. It should also end with a letter')
         return self.cleaned_data.get('name')
 
     def clean_option_fk_name(self):
@@ -178,5 +186,28 @@ class FieldForm(forms.ModelForm):
         self.clean_option_fk_name()
         return self.instance.options
 
+class DatabaseForm(forms.Form):
+    db_choices = settings.DATABASES.keys()
+    db_choices.remove('scaffold_temp')
+    db_name = forms.ChoiceField(label="Database to Scaffold", choices=[('','---------------')]+[(str(db), str(db)) for db in db_choices])
+    
+    def clean_db_name(self):
+        if not settings.DATABASES.has_key(self.cleaned_data.get('db_name')):
+            raise forms.ValidationError("Please select a valid database, if the database is not listed please include it inside your settings.py's DATABASES.")
+        return self.cleaned_data.get('db_name')
+            
+class DatabaseDumpForm(forms.Form):
+    db_location = forms.FileField(label="Database Location")
+    db = forms.CharField(label="Database to source the data", help_text="database to model after, it has to be one of the ones inside the DATABASES")
+    
+    def clean_db(self):
+        name = self.cleaned_data.get('db')
+        pattern = re.compile(r'^[a-zA-Z0-9\-_]+$')
+        if not pattern.match(name):
+            raise forms.ValidationError('Database name should only consist of letters, numbers, dashes and underscores')
+        return name
 
-
+    
+    
+    
+    

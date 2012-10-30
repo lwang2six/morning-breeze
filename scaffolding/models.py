@@ -48,23 +48,51 @@ FIELD_TYPES_DIC = {'BooleanField':FIELD_TYPE_BOOLEAN, 'CharField':FIELD_TYPE_CHA
                    'ForeignKey':FIELD_TYPE_FOREIGNKEY, 'IntegerField':FIELD_TYPE_INTEGER,
                    'ImageField':FIELD_TYPE_IMAGE,'PositiveIntegerField':FIELD_TYPE_POSITIVEINTEGER, 
                    'TextField':FIELD_TYPE_TEXT}
-                      
+                   
+#TBD
+#                   
+#class FieldType(models.Model):
+#    name = models.CharField(max_length=200)
+#    options = models.ManyToManyField(Option, through='OptionList')
+#   
+#class Option(models.Model):
+#    type = models.CharField(max_length=50)
+#    value = models.CharField(max_length=200)
+#
+#class OptionList(models.Model):
+#    field_type = models.ForeignKey(FieldType)
+#    option = models.ForeignKey(Option)   
+    
+#class Run(models.Model):    
+    #created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+    
+    #def __unicode__(self):
+    #    return self.id
+        
+    #def get_absolute_url(self): 
+    #    return '/scaffold/%s/' % self.id
+        
 class Application(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Application Name')
+    #run = models.ForeignKey(Run)
+    name = models.CharField(max_length=60, verbose_name='Application Name')
     status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+
+    #class Meta: 
+    #    unique_together=(('run', 'name'),)
 
     def __unicode__(self):
         return '%s' % (self.name)
 
     def get_absolute_url(self):
-        return '/applications/%s/' % self.id 
+    #    return '%sapplications/%s/' % (self.run.get_absolute_url(),self.id)
+        return '/applications/%s/' % (self.id)
 
     def is_processed(self):
         return self.status==APPLICATION_STATUS_PROCESSED
 
 class Class(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Class Name')
+    name = models.CharField(max_length=60, verbose_name='Class Name')
     application = models.ForeignKey(Application)
     create_view = models.BooleanField(default=False, verbose_name="views.py")
     create_urls = models.BooleanField(default=False, verbose_name="urls.py")
@@ -98,7 +126,7 @@ class Class(models.Model):
             return None
 
 class Field(models.Model):
-    name = models.CharField(max_length=30, verbose_name="Field Name")
+    name = models.CharField(max_length=60, verbose_name="Field Name")
     parent_class = models.ForeignKey(Class)
     type = models.CharField(max_length=1, choices=FIELD_TYPES)
     options = models.TextField(blank=True,null=True)

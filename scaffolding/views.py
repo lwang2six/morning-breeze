@@ -23,7 +23,7 @@ def application_detail(request, aid):
     return direct_to_template(request, 'application/application_detail.html',{'app':app, 'path':request.path})
 
 def application_edit(request, aid):
-    return application_base(request, aid)
+    return application_base(request,aid)
 
 def application_new(request):
     return application_base(request)
@@ -43,6 +43,8 @@ def application_base(request, aid=None):
     if request.method == 'POST':
         form = ApplicationForm(data=request.POST, instance=app)
         formset = classFormSet(request.POST, instance=app)
+        print form.errors
+        print formset.errors
         if form.is_valid() and formset.is_valid():
             app = form.save()
             formset.instance=app
@@ -152,12 +154,36 @@ def application_process(request, aid):
     return HttpResponseRedirect('/applications/')
     
     
-def process_sql(request):
-    cur = connections['default'].cursor()
-    cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
-    cur.execute('CREATE DATABASE scaffold_temp;')
+def scaffold_database(request):
+    db_form = DatabaseForm()
+    dbdump_form = DatabaseDumpForm()
+    if request.method == 'POST':
+        db_form = DatabaseForm(data=request.POST)
+        dbdump_form = DatabaseDumpForm(data=request.POST)
+
+        if db_form.is_valid() and dbdump_form.is_valid():
+            print 'choose only one please'
+        else:
+            if db_form.is_valid():
+                x = process_sql(db_form.cleaned_data['db_name'])
+                return HttpResponseRedirect(x.get_absolute_url())
+                
+            #assumin the default database's user account can create and modify databases
+            #database = settings.DATABASES['default']
+            #cur = connections['default'].cursor()
+            #cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
+            #cur.execute('CREATE DATABASE scaffold_temp;')
+            #db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s";' % form.cleaned_data.get('db_name'))
+            #if form.cleaned_data['db'] and form.cleaned_data['db_location']:
+            #    cur.execute('create database if not exists %s;' % form.cleaned_data.get('db'))
+            #    x =  commands.getoutput('mysql -u %s -p%s %s < %s' % (database['USER'], database['PASSWORD'], form.cleaned_data['db'], form.cleaned_data['db_location']))
     
-    x = commands.getoutput('python manage.py inspectdb --database scaffold_temp')
+    #process_sql()
+    return direct_to_template(request, 'database/database_form.html', {'db_form':db_form, 'dbdump_form':dbdump_form})
+    
+def process_sql(database_name='scaffold_temp'):
+    print database_name
+    x = commands.getoutput('python manage.py inspectdb --database %s' % database_name)
     have_class = False
     clas = extra = ''
     
@@ -172,8 +198,9 @@ def process_sql(request):
                 clas.save()
             extra = ''
             c_name = i.replace('class','').replace('(models.Model):','').lstrip().rstrip()
-            clas = Class(name=c_name, applicaiton=app)
+            clas = Class(name=c_name, application=app)
             clas.save()
+
         else:
             if have_class and not i.startswith('#'):
                 f = i.lstrip().rstrip().split('models.')
@@ -194,18 +221,23 @@ def process_sql(request):
                             else:
                                 opt = z
 
-                                       
-                    field = Field(name=name, parent_class=clas, type=FIELD_TYPE_DIC[type], options=opt)
+                    try:     
+                        type = FIELD_TYPES_DIC[type]
+                    except:
+                        type = '9'
+
+                    field = Field(name=name, parent_class=clas, type=type, options=opt)
                     field.save()
                 elif len(f) == 1 and not i.startswith('#'):
                     if extra:
                         extra = '%s\n%s' % (extra, i)
                     else:
                         extra = i
-    clas.extras = extra
-    clas.save()                        
-                        
-
+    if clas:
+        clas.extras = extra
+        clas.save()                        
+                 
+    return app       
             
-    return direct_to_template(request, 'application/hello.html', {'databases':x})
+
 
