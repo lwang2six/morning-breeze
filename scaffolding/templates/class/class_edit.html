@@ -19,6 +19,8 @@
 <form method="post" action="">{% csrf_token %}
 <fieldset style="width:375px;">
 <table>
+    {% if form.app_name.errors %}<tr class="error" style="background-color:#FFF;"><th></th><td>{{form.app_name.errors}}</td></tr>{% endif %}
+            <tr class="tr_title"><th>{{form.app_name.label_tag}}:</th><td>{{form.app_name}}</td></tr>
     {% if form.name.errors %}<tr class="error" style="background-color:#FFF;"><th></th><td>{{form.name.errors}}</td></tr>{% endif %}
     <tr class="tr_title"><th>{{form.name.label_tag}}: </th><td>{{form.name}}</td></tr>
  
@@ -68,8 +70,8 @@
 </fieldset>
 
 <div style="margin-left:20px;">
-<input type="button" id="one_more"  name="add_another" class="button" value="Add Another">
-<input type="submit" value="Submit" name="save" class="button" />
+<input type="button" id="one_more"  name="add_another" class="button" value="Add Another Field">
+<input type="submit" value="Save" name="save" class="button" />
 {% if clas.get_next_class %}
     <input type="submit" value="Continue" name="continue" class="button" />
 {% endif %}

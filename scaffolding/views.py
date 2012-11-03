@@ -12,52 +12,75 @@ from scaffolding.forms import *
 from scaffolding.models import *
 from scaffolding.write_file import *
 
-def application_list(request):
-    apps = Application.objects.filter(status=APPLICATION_STATUS_UNPROCESSED)
-    processed = Application.objects.filter(status=APPLICATION_STATUS_PROCESSED)
+def scaffold_list(request):
+    run = Run.objects.all()
+    return direct_to_template(request, 'scaffold_list.html', {'runs':run})
 
-    return direct_to_template(request, 'application/application_list.html', {'apps':apps,'processed':processed, 'path':request.path})
+def application_list(request, rid):
+    run = get_object_or_404(Run, pk=rid)
+    apps = Application.objects.filter(run=run, status=APPLICATION_STATUS_UNPROCESSED)
+    processed = Application.objects.filter(run=run, status=APPLICATION_STATUS_PROCESSED)
 
-def application_detail(request, aid):
-    app = get_object_or_404(Application, pk=aid)
+    return direct_to_template(request, 'application/application_list.html', {'apps':apps,'run':run,'processed':processed, 'path':request.path})
+
+def application_detail(request, rid, aname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
     return direct_to_template(request, 'application/application_detail.html',{'app':app, 'path':request.path})
 
-def application_edit(request, aid):
-    return application_base(request,aid)
+def application_edit(request, rid, aname):
+    return application_base(request, rid, aname)
 
-def application_new(request):
-    return application_base(request)
+def application_new(request, rid=None):
+    return application_base(request, rid)
 
-def application_base(request, aid=None):
-    app = None
+def application_base(request, rid=None, aname=None):
+    run = app = None
     form = ApplicationForm()
     classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=3, can_delete=False)
     formset = classFormSet()
+    if rid:
+        run = get_object_or_404(Run, pk=rid)
+    else:
+        run = Run()
+        run.save()
 
-    if aid:
-        app = get_object_or_404(Application, pk=aid)
+    if aname:
+        app = get_object_or_404(Application, run=run, name=aname)
         form = ApplicationForm(instance=app)
         classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
 
     if request.method == 'POST':
+    
+        if not aname:
+            app = Application(run=run)
+
         form = ApplicationForm(data=request.POST, instance=app)
         formset = classFormSet(request.POST, instance=app)
-        print form.errors
-        print formset.errors
-        if form.is_valid() and formset.is_valid():
+        
+        if form.is_valid():
             app = form.save()
-            formset.instance=app
-            formset.save()
-            if not aid:
-                if app.class_set.count():
-                    return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
-            return HttpResponseRedirect(app.get_absolute_url())
+            formset = classFormSet(request.POST, instance=app)
+            if formset.is_valid():
+                for i in formset.forms:
+                    try:
+                        i.clean_name()
+                        i.save()
+                    except:
+                        pass
+                    
 
-    return direct_to_template(request, 'application/application_edit.html', {'app':app, 'form':form, 'formset':formset, 'path':request.path})
+                if not aname:
+                    if app.class_set.count():
+                        return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
+                return HttpResponseRedirect(app.get_absolute_url())
 
-def application_delete(request, aid=None):
-    app = get_object_or_404(Application, pk=aid)
+    return direct_to_template(request, 'application/application_edit.html', {'run':run, 'app':app, 'form':form, 'formset':formset, 'path':request.path})
+
+def application_delete(request, rid, aname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
     
     if request.method == 'POST':
         if not request.POST.get('cancel'):
@@ -69,38 +92,50 @@ def application_delete(request, aid=None):
         return HttpResponseRedirect('applications')
     return direct_to_template(request, 'application/application_delete.html', {'app':app, 'path':request.path})               
 
-def class_detail(request, aid, cname):
-    app = get_object_or_404(Application, pk=aid)
+def class_detail(request, rid, aname, cname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
     clas = get_object_or_404(Class, application=app, name=cname)
 
     return direct_to_template(request, 'class/class_detail.html', {'app':app, 'clas':clas, 'path':request.path})
 
-def class_edit(request, aid, cname):
-    app = get_object_or_404(Application, pk=aid)
+def class_edit(request, rid, aname, cname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
     clas = get_object_or_404(Class, application=app, name=cname)
+    #appform = ApplicationFieldForm(instance=app)
     form = ClassFieldForm(instance=clas)
     formnum = 0 if clas.field_set.count() else 3
     fieldFormSet = inlineformset_factory(Class, Field, form=FieldForm, can_delete=False, extra=formnum)
     formset = fieldFormSet(instance=clas)
-
-
+    print form.errors
+    print formset.errors
     if request.method == 'POST':
         form = ClassFieldForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
+        #appform = ApplicationFieldForm(data=request.POST, instance=app)
+
         if form.is_valid() and formset.is_valid():
             clas = form.save()
-
             formset.save()
+
+            if form.cleaned_data.get('app_name'):
+                app = form.cleaned_data.get('app_name')
+
+                clas.application = app
+                clas.save()
+
             if request.POST.get('continue'):
                 if clas.get_next_class():
                     return HttpResponseRedirect(clas.get_next_class().get_edit_absolute_url())
-               
-            return HttpResponseRedirect(app.get_absolute_url())
 
-    return direct_to_template(request, 'class/class_edit.html', {'app':app, 'clas':clas, 'path':request.path, 'form':form, 'formset':formset})
+            return HttpResponseRedirect(clas.get_absolute_url())
 
-def class_delete(request, aid, cname):
-    app = get_object_or_404(Application, pk=aid)
+    return direct_to_template(request, 'class/class_edit.html', {'run':run, 'app':app, 'clas':clas, 'path':request.path, 'form':form, 'formset':formset})
+
+def class_delete(request, rid, aname, cname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
     clas = get_object_or_404(Class, application=app, name=cname)
 
     if request.method == 'POST':
@@ -111,8 +146,9 @@ def class_delete(request, aid, cname):
             return HttpResponseRedirect(app.get_absolute_url())
     return direct_to_template(request, 'class/class_delete.html', {'app':app, 'clas':clas, 'path':request.path})
 
-def application_process(request, aid):
-    app = get_object_or_404(Application, pk=aid)
+def application_process(request, rid, aname):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
 
     #if app.status == APPLICATION_STATUS_PROCESSED:
     #    raise Http404
@@ -151,43 +187,55 @@ def application_process(request, aid):
     app.status = APPLICATION_STATUS_PROCESSED
     app.save()
 
-    return HttpResponseRedirect('/applications/')
+    return HttpResponseRedirect(run.get_absolute_url())
     
     
 def scaffold_database(request):
     db_form = DatabaseForm()
-    dbdump_form = DatabaseDumpForm()
-    if request.method == 'POST':
-        db_form = DatabaseForm(data=request.POST)
-        dbdump_form = DatabaseDumpForm(data=request.POST)
 
-        if db_form.is_valid() and dbdump_form.is_valid():
-            print 'choose only one please'
-        else:
-            if db_form.is_valid():
+    if request.method == 'POST':
+        db_form = DatabaseForm(data=request.POST, files=request.FILES)
+
+        if db_form.is_valid():
+
+            if db_form.cleaned_data['db_name']:
                 x = process_sql(db_form.cleaned_data['db_name'])
                 return HttpResponseRedirect(x.get_absolute_url())
+            else:
+                d_file = db_form.cleaned_data['db_location']
+                db_location = './scaffolding/media/%s' % d_file.name
+                db_file = open(db_location, 'w')
+                for  chunk in d_file.chunks():
+                    db_file.write(chunk)
+
+                db_file.close()
                 
-            #assumin the default database's user account can create and modify databases
-            #database = settings.DATABASES['default']
-            #cur = connections['default'].cursor()
-            #cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
-            #cur.execute('CREATE DATABASE scaffold_temp;')
-            #db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s";' % form.cleaned_data.get('db_name'))
-            #if form.cleaned_data['db'] and form.cleaned_data['db_location']:
-            #    cur.execute('create database if not exists %s;' % form.cleaned_data.get('db'))
-            #    x =  commands.getoutput('mysql -u %s -p%s %s < %s' % (database['USER'], database['PASSWORD'], form.cleaned_data['db'], form.cleaned_data['db_location']))
+                #assumin the default database's user account can create and modify databases
+                '''
+                database = settings.DATABASES['default']
+                cur = connections['default'].cursor()
+                cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
+                cur.execute('CREATE DATABASE scaffold_temp;')
+                db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s";' % db_form.cleaned_data.get('db'))
+
+                x =  commands.getoutput('mysql -u %s -p%s scaffold_temp < %s' % (database['USER'], database['PASSWORD'], db_location))
+                db = db_form.cleaned_data.get('db')
+                if db:
+                    cur.execute('create database if not exists %s;' % db)
+                    x =  commands.getoutput('mysql -u %s -p%s %s < %s' % (database['USER'], database['PASSWORD'], db, db_location))
+                '''
     
     #process_sql()
-    return direct_to_template(request, 'database/database_form.html', {'db_form':db_form, 'dbdump_form':dbdump_form})
+    return direct_to_template(request, 'database/database_form.html', {'db_form':db_form})
     
 def process_sql(database_name='scaffold_temp'):
-    print database_name
+    run = Run()
+    run.save()
     x = commands.getoutput('python manage.py inspectdb --database %s' % database_name)
     have_class = False
     clas = extra = ''
     
-    app = Application(name='Unknown')
+    app = Application(run=run, name='Unknown')
     app.save()
     for i in x.split('\n'):
         if 'class' in i and '(models.Model):' in i:
@@ -210,12 +258,15 @@ def process_sql(database_name='scaffold_temp'):
                     opt = opt[:-1]
                     opt_list = opt.split(',')
                     opt = ''
-                    for i in opt_list:
-                        if '=' in i:
-                            if type == 'ForeignKey':
-                                z = 'fk=%s' % i
-                            else:
-                                z = i
+
+                    for j in opt_list:
+                        z = ''
+                        if type == 'ForeignKey':                           
+                            z = 'fk_name=%s' % j
+                        else:
+                            z = j
+
+                        if '=' in z:
                             if opt:
                                 opt = '%s, %s' % (opt, z)
                             else:
@@ -226,7 +277,7 @@ def process_sql(database_name='scaffold_temp'):
                     except:
                         type = '9'
 
-                    field = Field(name=name, parent_class=clas, type=type, options=opt)
+                    field = Field(name=name.lstrip().rstrip(), parent_class=clas, type=type, options=opt)
                     field.save()
                 elif len(f) == 1 and not i.startswith('#'):
                     if extra:

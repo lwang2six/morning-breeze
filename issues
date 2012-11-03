@@ -17,3 +17,6 @@ issues:
 notes:
     assumes all classes created are presented at the root level
     thought about using ajax to do the form changes but it might be better suited for version 2 when most of the project is complete and looking forward to upgrade/update the project. since the initial goal is to complete the project.
+
+
+duplicates for form names are automatically removed during save. issue is when 2 new entries with the same name, it creates error of duplicate entries in db so only save one solves the issue, and remove any complications. if users adds only one duplicate entry of an already existing, it will throw an error.

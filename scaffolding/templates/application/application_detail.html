@@ -2,7 +2,7 @@
 {% load scaffold_tags %}
 
 {% block top_left_content %}
-    <div class="back_link"><a href="/applications">back to applications listing</a></div>
+    <div class="back_link"><a href="{{app.run.get_absolute_url}}applications">back to applications listing</a></div>
 {% endblock %}
 {% block title %}<div class="page_title">scaffold application<span>|{{app.name}}</span></div>{% endblock %}
 

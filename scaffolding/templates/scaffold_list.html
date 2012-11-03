@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <ul>
+    {% for r in runs %}
+        <li>{{r}}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+

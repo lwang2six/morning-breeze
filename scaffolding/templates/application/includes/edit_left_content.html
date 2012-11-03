@@ -1,16 +1,24 @@
 {% load scaffold_tags %} 
 
-   {% if app %}
+   {% if app.name %}
         <h3>Edit:</h3>
+
         <ul>
-            <li class="app_title"><a {% if path|app_edit_matches %}class="active"{% endif %} href="{{app.get_absolute_url}}edit/">{{app.name|truncate_chars:8}}</a></li>
+            <li class="app_title"><a {% if path|app_edit_matches:app %}class="active"{% endif %} href="{{app.get_absolute_url}}edit/">{{app.name|truncate_chars:8}}</a></li>
         {% for c in app.class_set.all %}
-            <li class="class_title"><a {% if path|class_edit_matches:c.name %}class="active"{% endif %} href="{{c.get_edit_absolute_url}}">{{c.name|truncate_chars:11}}</a></li>
+            <li class="class_title"><a {% if path|class_edit_matches:c %}class="active"{% endif %} href="{{c.get_edit_absolute_url}}">{{c.name|truncate_chars:11}}</a></li>
         {% endfor %}
         </ul>
+
         {% if clas %}
-            <h3><a {% if path|matches:"^/applications/\d+/classes/[a-zA-Z]+([\-_][a-zA-Z]+)*/delete/$" %}class="active"{% endif %}href="{{clas.get_absolute_url}}delete/">Delete</a></h3>
+            <h3><a {% if path|matches:"^/scaffold/\d+/applications/[a-zA-Z]+([\-_][a-zA-Z]+)*/classes/[a-zA-Z]+([\-_][a-zA-Z]+)*/delete/$" %}class="active"{% endif %}href="{{clas.get_absolute_url}}delete/">Delete</a></h3>
         {% else %}
-            <h3><a {% if path|matches:"^/applications/\d+/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
+            <h3><a {% if path|matches:"^/scaffold/\d+/applications/[a-zA-Z]+([\-_][a-zA-Z]+)*/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
         {% endif %}
+
+        <a href="{{run.get_absolute_url}}applications/new/">Add New Application</a>
+
     {% endif %}
+
+        
+

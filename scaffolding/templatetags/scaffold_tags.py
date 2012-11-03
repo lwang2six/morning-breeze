@@ -11,23 +11,23 @@ def matches(value, arg):
     return False
 register.filter(matches)
 
-def app_matches(value):
-    t = r'/applications/\d+/$'
+def app_matches(value, app):
+    t = r'/scaffold/%s/applications/%s/$' % (app.run.id, app.name)
     return matches(value, t)
 register.filter(app_matches)
 
-def class_matches(value, arg):
-    t = r"/applications/\d+/classes/%s/$" % arg
+def class_matches(value, clas):
+    t = r"/scaffold/%s/applications/%s/classes/%s/$" % (clas.application.run.id, clas.application.name, clas.name)
     return matches(value, t)
 register.filter(class_matches)
 
-def app_edit_matches(value):
-    t = r'/applications/\d+/edit/$'
+def app_edit_matches(value, app):
+    t = r'/scaffold/%s/applications/%s/edit/$' % (app.run.id, app.name)
     return matches(value, t)
 register.filter(app_edit_matches)
 
-def class_edit_matches(value, arg):
-    t = r"/applications/\d+/classes/%s/edit/$" % arg
+def class_edit_matches(value, clas):
+    t = r"/scaffold/%s/applications/%s/classes/%s/edit/$" % (clas.application.run.id, clas.application.name, clas.name)
     return matches(value, t)
 register.filter(class_edit_matches)
 

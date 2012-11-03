@@ -1,14 +1,30 @@
 {% extends "base.html" %}
 {% load scaffold_tags %}
 
-{% block content %}
-<form method="post" action="">{% csrf_token %}
-<table>
-{{db_form}} 
+{% block top_left_content %}
+<div class="back_link">PHASE II</div>
+{% endblock %}
 
-{% for field in dbdump_form %}
-    <tr><th>{{field.label_tag}}: </th><td>{{field}}</td></tr>
-{% endfor %} 
+{% block left_content %}
+Phase I
+Phase II
+{% endblock %}
+
+{% block title%}
+    <div class="page_title">scaffolding<span>|Database</span></div>
+{% endblock%}
+
+
+{% block content %}
+<form method="post"  enctype="multipart/form-data" action="">{% csrf_token %}
+<table>
+{% if db_form.errors %}<tr><th></th><td>{{db_form.errors}}</td></tr>{% endif %}
+<tr><th>{{db_form.db_name.label_tag}}:</th><td>{{db_form.db_name}}</td></tr>
+<tr><th></th><td>--- OR ---</td></tr>
+
+    <tr><th>{{db_form.db_location.label_tag}}: </th><td>{{db_form.db_location}}</td></tr>
+    <tr><th>{{db_form.db.label_tag}}: </th><td>{{db_form.db}}</td></tr>
+
 </table>
 <input type="submit" value="Submit" name="save" class="button" />
 </form>

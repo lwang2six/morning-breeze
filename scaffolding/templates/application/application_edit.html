@@ -3,9 +3,13 @@
 
 {% block top_left_content %}
     {% if app %}
+        {% if app.name %}
         <div class="back_link"><a href="{{app.get_absolute_url}}">back to detail page</a></div>
+        {% else %}
+        <div class="back_link"><a href="{{run.get_absolute_url}}">back</a></div>
+        {% endif %}
     {% else %}
-        <div class="back_link"><a href="/applications/">back</a></div>
+        <div class="back_link"><a href="{{run.get_absolute_url}}">back</a></div>
     {% endif %}
 {% endblock %}
 {% block title %}
@@ -13,7 +17,12 @@
 {% endblock %}
 
 {% block left_content %}
-    {% include "application/includes/edit_left_content.html" %}
+    {% if app.name %}
+        {% include "application/includes/edit_left_content.html" %}
+    {% else %}
+        <h3>Current Applications</h3>
+        {% include "application/includes/left_content.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -47,8 +56,9 @@
         </div>
     </fieldset>
     <div style="margin-left:20px;">
-        <input type="button" id="one_more" value="Add Another" class="button" />
-        <input type="submit" value="Submit" name="save" class="button" />
+        <input type="submit" value="Add Another App" name="add_another_app" class="button" />
+        <input type="button" id="one_more" value="Add Another Class" class="button" />
+        <input type="submit" value="Continue" name="save" class="button" />
     </div>
 </form>
 

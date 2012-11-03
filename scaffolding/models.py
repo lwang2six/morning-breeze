@@ -63,30 +63,34 @@ FIELD_TYPES_DIC = {'BooleanField':FIELD_TYPE_BOOLEAN, 'CharField':FIELD_TYPE_CHA
 #    field_type = models.ForeignKey(FieldType)
 #    option = models.ForeignKey(Option)   
     
-#class Run(models.Model):    
-    #created = models.DateTimeField(default=datetime.datetime.now, editable=False)
+class Run(models.Model):    
+    created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     
-    #def __unicode__(self):
-    #    return self.id
+    def __unicode__(self):
+        return '%s' % self.id
         
-    #def get_absolute_url(self): 
-    #    return '/scaffold/%s/' % self.id
+    def get_absolute_url(self): 
+        return '/scaffold/%s/' % self.id
         
 class Application(models.Model):
-    #run = models.ForeignKey(Run)
+    run = models.ForeignKey(Run)
     name = models.CharField(max_length=60, verbose_name='Application Name')
     status = models.CharField(max_length=1, choices=APPLICATION_STATUSES, default=APPLICATION_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
 
-    #class Meta: 
-    #    unique_together=(('run', 'name'),)
+    class Meta: 
+        unique_together=(('run', 'name'),)
 
     def __unicode__(self):
-        return '%s' % (self.name)
+        if self.name:
+            return '%s' % (self.name)
+        else:
+            return '%s' % self.id
 
     def get_absolute_url(self):
-    #    return '%sapplications/%s/' % (self.run.get_absolute_url(),self.id)
-        return '/applications/%s/' % (self.id)
+        return '%sapplications/%s/' % (self.run.get_absolute_url(),self.name)
+    #    return '/applications/%s/' % (self.id)
+    #    return '/applications/%s/' % (self.name)
 
     def is_processed(self):
         return self.status==APPLICATION_STATUS_PROCESSED
@@ -110,6 +114,7 @@ class Class(models.Model):
         unique_together=(('name', 'application'),)
 
     def __unicode__(self):
+        
         return '%s.%s' % (self.application, self.name)
 
     def get_absolute_url(self):
@@ -145,6 +150,7 @@ class Field(models.Model):
         opt = []
         for i in x:
             if not 'fk_name' in i:
-                opt.append(i)
+                if i:
+                    opt.append(i)
         return opt
 

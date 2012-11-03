@@ -1,14 +1,19 @@
 from django.conf.urls.defaults import patterns
 
 urlpatterns = patterns('scaffolding.views',
-    (r'^applications/(?P<aid>\d+)/edit/$', 'application_edit'),
-    (r'^applications/(?P<aid>\d+)/classes/(?P<cname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/edit/$', 'class_edit'),
-    (r'^applications/(?P<aid>\d+)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/delete/$', 'class_delete'),
-    (r'^applications/(?P<aid>\d+)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/$', 'class_detail'),
-    (r'^applications/(?P<aid>\d+)/$', 'application_detail'),
-    (r'^applications/(?P<aid>\d+)/process/$', 'application_process'),
-    (r'^applications/new/$', 'application_new'),
-    (r'^applications/(?P<aid>\d+)/delete/$', 'application_delete'),
-    (r'^applications/$', 'application_list'),
+    (r'^scaffold/(?P<rid>\d+)/applications/new/$', 'application_new'),
+    (r'^scaffold/(?P<rid>\d+)/applications/$', 'application_list'),
+    (r'^scaffold/new/$', 'application_new'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/edit/$', 'application_edit'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/edit/$', 'class_edit'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/delete/$', 'class_delete'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/$', 'class_detail'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/$', 'application_detail'),
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/process/$', 'application_process'),
+
+    (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/delete/$', 'application_delete'),
+    (r'^scaffold/(?P<rid>\d+)/$', 'application_list'),
+    (r'^scaffold/$', 'scaffold_list'),
+
     (r'^database/$', 'scaffold_database'),
 )
