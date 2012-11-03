@@ -11,7 +11,7 @@ SCAFFOLD_DATABASES = {
             'scaffold_temp':{
                     'ENGINE': 'django.db.backends.mysql', 
                     'NAME': 'scaffold_temp', 
-                    'USER': 'leo', 
+                    'USER': 'root', 
                     'PASSWORD': '1234', 
                     'HOST': '', 
                     'PORT': '', 

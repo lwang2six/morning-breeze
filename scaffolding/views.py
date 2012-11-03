@@ -108,8 +108,7 @@ def class_edit(request, rid, aname, cname):
     formnum = 0 if clas.field_set.count() else 3
     fieldFormSet = inlineformset_factory(Class, Field, form=FieldForm, can_delete=False, extra=formnum)
     formset = fieldFormSet(instance=clas)
-    print form.errors
-    print formset.errors
+
     if request.method == 'POST':
         form = ClassFieldForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
@@ -211,21 +210,19 @@ def scaffold_database(request):
                 db_file.close()
                 
                 #assumin the default database's user account can create and modify databases
-                '''
                 database = settings.DATABASES['default']
                 cur = connections['default'].cursor()
-                cur.execute('DROP DATABASE IF EXISTS scaffold_temp;')
-                cur.execute('CREATE DATABASE scaffold_temp;')
+                x = commands.getoutput("mysql -u %s -p%s -e 'create database if not exists scaffold_temp;'" % (database['USER'], database['PASSWORD']))
+                #cur.execute('CREATE DATABASE IF NOT EXISTS scaffold_temp;')
                 db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s";' % db_form.cleaned_data.get('db'))
 
                 x =  commands.getoutput('mysql -u %s -p%s scaffold_temp < %s' % (database['USER'], database['PASSWORD'], db_location))
                 db = db_form.cleaned_data.get('db')
                 if db:
-                    cur.execute('create database if not exists %s;' % db)
+                    x = commands.getoutput("mysql -u %s -p%s -e 'create database if not exists %s;'" % (database['USER'], database['PASSWORD'], db))
                     x =  commands.getoutput('mysql -u %s -p%s %s < %s' % (database['USER'], database['PASSWORD'], db, db_location))
-                '''
-    
-    #process_sql()
+
+                return HttpResponseRedirect(process_sql().get_absolute_url())
     return direct_to_template(request, 'database/database_form.html', {'db_form':db_form})
     
 def process_sql(database_name='scaffold_temp'):

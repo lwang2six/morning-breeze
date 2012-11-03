@@ -246,6 +246,7 @@ class FieldForm(forms.ModelForm):
 
 class DatabaseForm(forms.Form):
     db_choices = settings.DATABASES.keys()
+    #not sure why i remove scaffold_temp
     db_choices.remove('scaffold_temp')
     db_name = forms.ChoiceField(label="Database to Scaffold", choices=[('','---------------')]+[(str(db), str(db)) for db in db_choices], required=False)
     
