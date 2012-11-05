@@ -13,7 +13,8 @@ urlpatterns = patterns('scaffolding.views',
 
     (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/delete/$', 'application_delete'),
     (r'^scaffold/(?P<rid>\d+)/$', 'application_list'),
-    (r'^scaffold/$', 'scaffold_list'),
+    (r'^scaffold/runs/$', 'scaffold_list'),
+    (r'^scaffold/$', 'scaffold'),
 
     (r'^database/$', 'scaffold_database'),
 )

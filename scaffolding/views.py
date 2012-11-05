@@ -12,6 +12,9 @@ from scaffolding.forms import *
 from scaffolding.models import *
 from scaffolding.write_file import *
 
+def scaffold(request):
+    return direct_to_template(request, 'scaffold_home.html', {})
+
 def scaffold_list(request):
     run = Run.objects.all()
     return direct_to_template(request, 'scaffold_list.html', {'runs':run})
@@ -43,7 +46,7 @@ def application_base(request, rid=None, aname=None):
         run = get_object_or_404(Run, pk=rid)
     else:
         run = Run()
-        run.save()
+
 
     if aname:
         app = get_object_or_404(Application, run=run, name=aname)
