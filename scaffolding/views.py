@@ -13,11 +13,11 @@ from scaffolding.models import *
 from scaffolding.write_file import *
 
 def scaffold(request):
-    return direct_to_template(request, 'scaffold_home.html', {})
+    return direct_to_template(request, 'scaffold_home.html', { 'path':request.path})
 
 def scaffold_list(request):
     run = Run.objects.all()
-    return direct_to_template(request, 'scaffold_list.html', {'runs':run})
+    return direct_to_template(request, 'scaffold_list.html', {'runs':run,  'path':request.path})
 
 def application_list(request, rid):
     run = get_object_or_404(Run, pk=rid)
@@ -29,7 +29,7 @@ def application_list(request, rid):
 def application_detail(request, rid, aname):
     run = get_object_or_404(Run, pk=rid)
     app = get_object_or_404(Application, run=run, name=aname)
-    return direct_to_template(request, 'application/application_detail.html',{'app':app, 'path':request.path})
+    return direct_to_template(request, 'application/application_detail.html',{'run':run, 'app':app, 'path':request.path})
 
 def application_edit(request, rid, aname):
     return application_base(request, rid, aname)
@@ -47,7 +47,6 @@ def application_base(request, rid=None, aname=None):
     else:
         run = Run()
 
-
     if aname:
         app = get_object_or_404(Application, run=run, name=aname)
         form = ApplicationForm(instance=app)
@@ -55,14 +54,22 @@ def application_base(request, rid=None, aname=None):
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
 
     if request.method == 'POST':
-    
+        if request.POST.get('cancel'):
+            if run.id:
+                return HttpResponseRedirect(run.get_absolute_url())
+            else:
+                return HttpResponseRedirect('/scaffold/runs')
+
         if not aname:
+
             app = Application(run=run)
 
         form = ApplicationForm(data=request.POST, instance=app)
         formset = classFormSet(request.POST, instance=app)
         
         if form.is_valid():
+            run.save()
+            form.instance.run = run
             app = form.save()
             formset = classFormSet(request.POST, instance=app)
             if formset.is_valid():
@@ -72,11 +79,13 @@ def application_base(request, rid=None, aname=None):
                         i.save()
                     except:
                         pass
-                    
 
                 if not aname:
                     if app.class_set.count():
                         return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
+
+                if request.POST.get('add_another_app'):
+                    return HttpResponseRedirect('%sapplications/new/' % run.get_absolute_url())
                 return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'application/application_edit.html', {'run':run, 'app':app, 'form':form, 'formset':formset, 'path':request.path})
@@ -93,14 +102,14 @@ def application_delete(request, rid, aname):
                 clas.delete()
             app.delete()
         return HttpResponseRedirect('applications')
-    return direct_to_template(request, 'application/application_delete.html', {'app':app, 'path':request.path})               
+    return direct_to_template(request, 'application/application_delete.html', {'run':run, 'app':app, 'path':request.path})               
 
 def class_detail(request, rid, aname, cname):
     run = get_object_or_404(Run, pk=rid)
     app = get_object_or_404(Application, run=run, name=aname)
     clas = get_object_or_404(Class, application=app, name=cname)
 
-    return direct_to_template(request, 'class/class_detail.html', {'app':app, 'clas':clas, 'path':request.path})
+    return direct_to_template(request, 'class/class_detail.html', {'run':run, 'app':app, 'clas':clas, 'path':request.path})
 
 def class_edit(request, rid, aname, cname):
     run = get_object_or_404(Run, pk=rid)
@@ -116,6 +125,9 @@ def class_edit(request, rid, aname, cname):
         form = ClassFieldForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
         #appform = ApplicationFieldForm(data=request.POST, instance=app)
+
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(clas.get_absolute_url())
 
         if form.is_valid() and formset.is_valid():
             clas = form.save()
@@ -146,7 +158,7 @@ def class_delete(request, rid, aname, cname):
                 field.delete()
             clas.delete()
             return HttpResponseRedirect(app.get_absolute_url())
-    return direct_to_template(request, 'class/class_delete.html', {'app':app, 'clas':clas, 'path':request.path})
+    return direct_to_template(request, 'class/class_delete.html', {'run':run, 'app':app, 'clas':clas, 'path':request.path})
 
 def application_process(request, rid, aname):
     run = get_object_or_404(Run, pk=rid)
@@ -226,7 +238,7 @@ def scaffold_database(request):
                     x =  commands.getoutput('mysql -u %s -p%s %s < %s' % (database['USER'], database['PASSWORD'], db, db_location))
 
                 return HttpResponseRedirect(process_sql().get_absolute_url())
-    return direct_to_template(request, 'database/database_form.html', {'db_form':db_form})
+    return direct_to_template(request, 'database/database_form.html', {'db_form':db_form, 'path':request.path})
     
 def process_sql(database_name='scaffold_temp'):
     run = Run()

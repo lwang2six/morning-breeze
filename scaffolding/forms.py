@@ -20,7 +20,7 @@ class ApplicationForm(forms.ModelForm):
             
         if not pattern.match(name):
             raise forms.ValidationError('Application names should only contain letters, underscore and dash. It should also end with a letter')
-
+            
         app = self.instance.run.application_set.filter(name=name)
         if app:
             if not self.instance.id:

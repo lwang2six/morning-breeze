@@ -11,11 +11,7 @@
     </div>
 {% endblock %}
 {% block left_content %}
-<div style="margin-top:20px">
-    <div class="scaffold_left_content"><a href="/scaffold/new/">New Scaffold Project</a></div>
-    <div class="scaffold_left_content"><a href="/scaffold/runs/">Existing Scaffold Projects</a></div>
-    <div class="scaffold_left_content"></div>
-</div>
+   {% include "application/includes/main_left_content.html" %}
 {% endblock %}
 {% block content %}
     <div class="section">

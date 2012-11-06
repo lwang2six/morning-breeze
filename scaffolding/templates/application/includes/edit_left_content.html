@@ -15,9 +15,11 @@
         {% else %}
             <h3><a {% if path|matches:"^/scaffold/\d+/applications/[a-zA-Z]+([\-_][a-zA-Z]+)*/delete/$" %}class="active"{% endif %}href="{{app.get_absolute_url}}delete/">Delete</a></h3>
         {% endif %}
-
-        <a href="{{run.get_absolute_url}}applications/new/">Add New Application</a>
-
+        
+        <div style="margin-top:20px;">
+        <hr style="margin-left:6px; margin-bottom:20px; width:150px;"/>
+        <a style="margin:8px;" href="{{run.get_absolute_url}}applications/new/">Add New Application</a>
+        </div>
     {% endif %}
 
         

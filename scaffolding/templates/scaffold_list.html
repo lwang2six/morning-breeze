@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-    <div class="page_title">scaffolding<span>|CRUD Made Eazy</span></div>
+    <div class="page_title">scaffolding<span>|Current Projects</span></div>
 {% endblock%}
 
 {% block top_left_content %}
@@ -11,20 +11,19 @@
     </div>
 {% endblock %}
 {% block left_content %}
-<div style="margin-top:20px">
-    <div class="scaffold_left_content"><a href="/scaffold/new/">New Scaffold Project</a></div>
-    <div class="scaffold_left_content"><a href="/scaffold/runs/">Existing Scaffold Projects</a></div>
-    <div class="scaffold_left_content"></div>
-</div>
+   {% include "application/includes/main_left_content.html" %}
 {% endblock %}
 {% block content %}
     <div class="section">
-        <div class="content_title">Current Projects</div>
-        <ul>
+        <table border="1">
+
+            <tr style="background-color:#FFF"><th style="padding:10px 30px; text-align:center;">Scaffold Project ID</th><th style="padding:10px 30px; text-align:center;" >Created Date</th></tr>
+
             {% for run in runs %}
-            <li><a href="{{run.get_absolute_url}}">{{run}}</a></li>
+                <tr style="background-color:#FFF;"><td style="padding:10px 30px; text-align:center;"><a href="{{run.get_absolute_url}}">{{run.id}}</a></td><td style="padding:10px 30px; text-align:center;"><a href="{{run.get_absolute_url}}">{{run.created}}</a></td></tr>
             {% endfor %}
-        </ul>
+
+        </table>
     </div>
 
 {% endblock %}

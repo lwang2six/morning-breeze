@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block title %}
-    <div class="page_title">editing<span>|{{clas.name}}</span></div>
+    <div class="page_title">editing class<span>|{{clas.name}}</span></div>
 {% endblock %}
 
 {% block left_content %}
@@ -75,6 +75,7 @@
 {% if clas.get_next_class %}
     <input type="submit" value="Continue" name="continue" class="button" />
 {% endif %}
+<input type="submit" value="Cancel" name="cancel" class="button" />
 </div>
 </form>
 

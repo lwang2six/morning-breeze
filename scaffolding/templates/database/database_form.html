@@ -6,8 +6,7 @@
 {% endblock %}
 
 {% block left_content %}
-Phase I
-Phase II
+   {% include "application/includes/main_left_content.html" %}
 {% endblock %}
 
 {% block title%}
@@ -17,15 +16,19 @@ Phase II
 
 {% block content %}
 <form method="post"  enctype="multipart/form-data" action="">{% csrf_token %}
+<fieldset style="width:640px; padding:13px 10px 15px 15px;">
 <table>
-{% if db_form.errors %}<tr><th></th><td>{{db_form.errors}}</td></tr>{% endif %}
+{% if db_form.db_name.errors %}<tr><th></th><td>{{db_form.db_name.errors}}</td></tr>{% endif %}
 <tr><th>{{db_form.db_name.label_tag}}:</th><td>{{db_form.db_name}}</td></tr>
-<tr><th></th><td>--- OR ---</td></tr>
+<tr style="background-color:#FFF"><th></th><td>--- OR ---</td></tr>
 
+{% if db_form.db_location.errors %}<tr><th></th><td>{{db_form.db_location.errors}}</td></tr>{% endif %}
     <tr><th>{{db_form.db_location.label_tag}}: </th><td>{{db_form.db_location}}</td></tr>
+{% if db_form.db.errors %}<tr><th></th><td>{{db_form.db.errors}}</td></tr>{% endif %}
     <tr><th>{{db_form.db.label_tag}}: </th><td>{{db_form.db}}</td></tr>
 
 </table>
+</fieldset>
 <input type="submit" value="Submit" name="save" class="button" />
 </form>
 {% endblock %}

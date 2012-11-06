@@ -16,5 +16,5 @@ urlpatterns = patterns('scaffolding.views',
     (r'^scaffold/runs/$', 'scaffold_list'),
     (r'^scaffold/$', 'scaffold'),
 
-    (r'^database/$', 'scaffold_database'),
+    (r'^scaffold/database/$', 'scaffold_database'),
 )

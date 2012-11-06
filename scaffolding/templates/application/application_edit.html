@@ -9,20 +9,29 @@
         <div class="back_link"><a href="{{run.get_absolute_url}}">back</a></div>
         {% endif %}
     {% else %}
+        {% if run.id %}
         <div class="back_link"><a href="{{run.get_absolute_url}}">back</a></div>
+        {% else %}
+            <div class="back_link">PHASE I</div>
+        {% endif %}
     {% endif %}
 {% endblock %}
 {% block title %}
-    <div class="page_title">{% if app.id %}editing<span>|{{app.name}}</span>{% else %}new<span>|Application</span>{% endif %}</div>
+    <div class="page_title">{% if app.id %}editing applcation<span>|{{app.name}}</span>{% else %}scaffolding<span>|Application</span>{% endif %}</div>
 {% endblock %}
 
 {% block left_content %}
     {% if app.name %}
         {% include "application/includes/edit_left_content.html" %}
     {% else %}
-        <h3>Current Applications</h3>
-        {% include "application/includes/left_content.html" %}
+        {% if run.id %}
+            <h3>Current Applications</h3>
+            {% include "application/includes/left_content.html" %}
+        {% else %}
+            {% include "application/includes/main_left_content.html" %}
+        {% endif %}
     {% endif %}
+
 {% endblock %}
 
 {% block content %}
@@ -55,10 +64,13 @@
         *note - models.py will be created by default
         </div>
     </fieldset>
-    <div style="margin-left:20px;">
-        <input type="submit" value="Add Another App" name="add_another_app" class="button" />
+    <div style="margin-left:8px;">
+        {% if app.id %}
+            <input type="submit" value="Add Another App" name="add_another_app" class="button" />
+        {% endif %}
         <input type="button" id="one_more" value="Add Another Class" class="button" />
         <input type="submit" value="Continue" name="save" class="button" />
+        <input type="submit" value="Cancel" name="cancel" class="button" />
     </div>
 </form>
 

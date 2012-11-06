@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
 {% block title%}
-    <div class="page_title">scaffolding<span>|CRUD Made Eazy</span></div>
+    <div class="page_title">scaffolding<span>|Project {{run.id}}</span></div>
 {% endblock%}
 
 {% block top_left_content %}
-<div class="back_link">PHASE I</div>
+<div class="back_link"><a href="/scaffold/runs/">Back to Projects List</a></div>
+{% endblock %}
+
+{% block left_content %}
+   {% include "application/includes/main_left_content.html" %}
 {% endblock %}
 
 {% block content %}
