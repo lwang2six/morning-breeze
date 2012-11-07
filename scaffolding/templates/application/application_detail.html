@@ -19,27 +19,29 @@
     <a class="delete" href="{{app.get_absolute_url}}delete/">Delete</a>
 </div>
 
-<div class="section">
-    <div class="content_title">Classes:</div>
-    {% for c in app.class_set.all %}
-        <span class="class_title"><a href="{{c.get_absolute_url}}">{{c.name}}</a></span> - <span class="status">{{c.get_status_display}}</span>
-        <a class="edit" href="{{app.get_absolute_url}}classes/{{c.name}}/edit/">Edit</a>
-        <a class="delete" href="{{app.get_absolute_url}}classes/{{c.name}}/delete/">Delete</a>
-        <div class="detail_field_list">
-        {% if c.field_set.all %}
-            Fields:
-            <ul>
-                {% for f in c.field_set.all %}
-                    <li>{{f.name}} - {{f.get_type_display}} - <span class="status">{{f.get_status_display}}</span></li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-        </div>
+{% if app.class_set.all %}
+    <div class="section">
+        <div class="content_title">Classes:</div>
+        {% for c in app.class_set.all %}
+            <span class="class_title"><a href="{{c.get_absolute_url}}">{{c.name}}</a></span> - <span class="status">{{c.get_status_display}}</span>
+            <a class="edit" href="{{app.get_absolute_url}}classes/{{c.name}}/edit/">Edit</a>
+            <a class="delete" href="{{app.get_absolute_url}}classes/{{c.name}}/delete/">Delete</a>
+            <div class="detail_field_list">
+            {% if c.field_set.all %}
+                Fields:
+                <ul>
+                    {% for f in c.field_set.all %}
+                        <li>{{f.name}} - {{f.get_type_display}} - <span class="status">{{f.get_status_display}}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            </div>
 
-    {% endfor %}
-    
-</div>
-<form method="post" action="{{app.get_absolute_url}}process/"0>{% csrf_token %}
+        {% endfor %}    
+    </div>
+{% endif %}
+
+<form method="post" action="{{app.get_absolute_url}}review/"0>{% csrf_token %}
 <div style="margin-left:20px;">
 <input type="submit" value="{% if app.is_processed %}Rep{% else %}P{% endif %}rocess" name="{% if app.is_processed %}re{% endif %}process" class="button" />
 </div>

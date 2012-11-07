@@ -154,3 +154,11 @@ class Field(models.Model):
                     opt.append(i)
         return opt
 
+    def get_fk(self):
+        x = self.options.split(',')
+        for i in x:
+            if 'fk_name' in i:
+                return '(%s)' % i.replace('fk_name=','')
+        return ''
+
+

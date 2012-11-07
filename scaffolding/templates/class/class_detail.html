@@ -10,25 +10,28 @@
 {% endblock %} 
 
 {% block content %}
-<div class="content_title">Fields</div>
 
+    {% if clas.field_set.all %}
+        <div class="content_title">Fields</div>
+        {% for f in clas.field_set.all %}
+            <div class="field">
+                <div><span class="field_name">{{f.name}}</span> - {{f.get_type_display}} - {{f.get_status_display}}</div>
 
-{% for f in clas.field_set.all %}
-    <div class="field">
-        <div><span class="field_name">{{f.name}}</span> - {{f.get_type_display}} - {{f.get_status_display}}</div>
-
-        {% if f.get_options %}
-            <div class="field_options">Options:</div>
-            <div class="field_option_list">
-                    <ul>
-                        {% for option in f.get_options %}
-                            <li>{{option}}</li>
-                        {% endfor %}
-                    </ul>
+                {% if f.get_options %}
+                    <div class="field_options">Options:</div>
+                    <div class="field_option_list">
+                            <ul>
+                                {% for option in f.get_options %}
+                                    <li>{{option}}</li>
+                                {% endfor %}
+                            </ul>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
-    </div>
-{% endfor %}
+        {% endfor %}
+    {% else %}
+        <div class="content_title">Current class does not have any fields.</div>
+    {% endif %}
     {% if clas.extras %}
     <div class="content_title">Extras</div>
                <pre>{{clas.extras}}</pre>

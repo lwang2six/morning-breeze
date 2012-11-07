@@ -32,6 +32,9 @@ def write_model(class_object, first_class=False):
             
         model_file.write('    %s = models.%s(%s)\n'% (field.name.lower(), field.get_type_display(), opts))
 
+    if class_object.extras:
+        model_file.write('\n%s\n' % class_object.extras.rstrip('\n')) 
+
     model_file.write('\n    def __unicode__(self):\n')
     x = "        return '%s - %s' % (self.id, self."
     x += "%s)\n" % class_object.field_set.all()[0].name.lower()
@@ -141,8 +144,6 @@ def write_urls(class_object, first_class=False, last_class=False):
         first_line = "from django.conf.urls.defaults import *\n\n" +\
                      "urlpatterns = patterns('',\n"
 
-        
-
     url_file = open(file_name, write_type)
     url_file.write(first_line)
 
@@ -175,7 +176,7 @@ def write_admin(class_object, first_class):
     admin_file.close()
 
 def make_folder(folder):
-    if not os.path.exists(folder):
+    if not os.path.isdir(folder):
         os.makedirs(folder)
 
 def write_template_base(class_object):
@@ -314,6 +315,7 @@ def write_template_delete(class_object):
     temp_file.close()
 
 def write_templates(class_object):
+    make_folder('./%s/templates' % class_object.application.name.lower())
     make_folder('./%s/templates/%s' % (class_object.application.name.lower(), class_object.name.lower()))
     write_template_base(class_object)
     write_template_new(class_object)
