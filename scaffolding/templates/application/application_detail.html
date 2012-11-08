@@ -43,6 +43,7 @@
 
 <form method="post" action="{{app.get_absolute_url}}review/"0>{% csrf_token %}
 <div style="margin-left:20px;">
+<a href="{{app.get_absolute_url}}edit/"class="button">Edit</a>
 <input type="submit" value="{% if app.is_processed %}Rep{% else %}P{% endif %}rocess" name="{% if app.is_processed %}re{% endif %}process" class="button" />
 </div>
 </form>

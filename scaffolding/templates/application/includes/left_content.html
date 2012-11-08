@@ -9,3 +9,10 @@
         </ul>
       {% endfor %}
     </div>
+
+    {% if run %}
+        <div style="margin-top:20px;">
+        <hr style="margin-left:6px; margin-bottom:20px; width:150px;"/>
+        <a style="margin:8px;" href="{{run.get_absolute_url}}applications/new/">Add New Application</a>
+        </div>
+    {% endif %}

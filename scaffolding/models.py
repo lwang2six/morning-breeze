@@ -92,6 +92,9 @@ class Application(models.Model):
     #    return '/applications/%s/' % (self.id)
     #    return '/applications/%s/' % (self.name)
 
+    def get_other_apps(self):
+        return self.run.application_set.exclude(id=self.id)
+
     def is_processed(self):
         return self.status==APPLICATION_STATUS_PROCESSED
 
