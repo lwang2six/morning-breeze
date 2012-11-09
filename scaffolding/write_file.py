@@ -207,9 +207,10 @@ def write_urls(class_object, first_class=False, last_class=False):
     url_file = open(file_name, write_type)
     url_file.write(first_line)
 
-    url_file.write("    (r'^%s/new/$', '%s.views.%s_new'),\n" % (class_name, app_name, class_name))
-    url_file.write("    (r'^%s/(?P<oid>\d+)/edit/$', '%s.views.%s_edit'),\n" % (class_name, app_name, class_name))
-    url_file.write("    (r'^%s/(?P<oid>\d+)/delete/$', '%s.views.%s_delete'),\n" % (class_name, app_name, class_name))
+    if class_object.create_forms:
+        url_file.write("    (r'^%s/new/$', '%s.views.%s_new'),\n" % (class_name, app_name, class_name))
+        url_file.write("    (r'^%s/(?P<oid>\d+)/edit/$', '%s.views.%s_edit'),\n" % (class_name, app_name, class_name))
+        url_file.write("    (r'^%s/(?P<oid>\d+)/delete/$', '%s.views.%s_delete'),\n" % (class_name, app_name, class_name))
     url_file.write("    (r'^%s/(?P<oid>\d+)/$', '%s.views.%s_detail'),\n" % (class_name, app_name, class_name))
     url_file.write("    (r'^%s/$', '%s.views.%s_list'),\n" % (class_name, app_name, class_name))
     url_file.write(')\n')

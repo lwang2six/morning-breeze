@@ -186,7 +186,8 @@ def application_process(request, rid, aname):
              
             first_class=True
             count = 1
-            for c in app.class_set.all():
+            # create all classes without fk first.
+            for c in list(app.class_set.exclude(field__type=FIELD_TYPE_FOREIGNKEY))+list(app.class_set.filter(field__type=FIELD_TYPE_FOREIGNKEY).distinct()):
                 if c.field_set.count():
                     write_model(c, first_class)
                     if c.create_view:
@@ -203,7 +204,7 @@ def application_process(request, rid, aname):
                     first_class=False
                     count = count + 1
                     c.status = CLASS_STATUS_PROCESSED
-                    for field in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED):
+                    for field in c.field_set.filter(status=FIELD_STATUS_UNPROCESSED).distinct():
                         field.status = FIELD_STATUS_PROCESSED
                         field.save()
                     c.save()
