@@ -1,22 +1,14 @@
-
-
-#from django.db import connections
-
-#To ensure a temporary database gets created.
-#try:
-#    cursor = connections['default'].cursor()
-#    cursor.execute('DROP DATABASE IF EXISTS scaffold_temp;')
-#    cursor.execute('CREATE DATABASE scaffold_temp;')
+#secondary database to be used to house data for scaffolding database operations.
 SCAFFOLD_DATABASES = {
             'scaffold_temp':{
                     'ENGINE': 'django.db.backends.mysql', 
+                    #please leave this unchanged
                     'NAME': 'scaffold_temp', 
-                    'USER': 'root', 
+                    #please change to a user that can create/modfiy database schemas
+                    'USER': 'root',
+                    #the password for that user
                     'PASSWORD': '1234', 
                     'HOST': '', 
                     'PORT': '', 
             }}
-#except:
-#    print "issue with creating a temporary database, currently only support MySQL."
-#    SCAFFOLD_DATABASES = {}
 

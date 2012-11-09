@@ -1,9 +1,16 @@
-# Django settings for hello project.
+import os
+import sys
 
+#PROJECT_PATH is where this settings.py file is, all other paths will be specified relative to this
+if __name__ == '__main__':
+    filename = sys.argv[0]
+else:
+    filename = __file__
+PROJECT_PATH = os.path.abspath(os.path.dirname(filename))
 
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -15,7 +22,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', #postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'scaffolding',                      # Or path to database file if using sqlite3.
-        'USER': 'leo',                      # Not used with sqlite3.
+        'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': '1234',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
@@ -23,10 +30,10 @@ DATABASES = {
 }
 
 
-from scaffolding.scaffold_settings import *#SCAFFOLD_DATABASES
-
-if SCAFFOLD_DATABASES:
-    DATABASES = dict(DATABASES.items() + SCAFFOLD_DATABASES.items())
+if DEBUG:
+    from scaffolding.scaffold_settings import *#SCAFFOLD_DATABASES
+    if SCAFFOLD_DATABASES:
+        DATABASES = dict(DATABASES.items() + SCAFFOLD_DATABASES.items())
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -92,6 +99,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_PATH, 'templates'),
 )
 
 INSTALLED_APPS = (
