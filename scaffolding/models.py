@@ -87,6 +87,12 @@ class Application(models.Model):
         else:
             return '%s' % self.id
 
+    def has_forms(self):
+        for c in self.class_set.all():
+            if c.create_forms:
+                return True
+        return False
+
     def get_absolute_url(self):
         return '%sapplications/%s/' % (self.run.get_absolute_url(),self.name)
     #    return '/applications/%s/' % (self.id)
@@ -122,6 +128,7 @@ class Class(models.Model):
 
     def get_absolute_url(self):
         return '%sclasses/%s/' % (self.application.get_absolute_url(), self.name)
+
     def get_edit_absolute_url(self):
         return '%sclasses/%s/edit/' % (self.application.get_absolute_url(), self.name)
 

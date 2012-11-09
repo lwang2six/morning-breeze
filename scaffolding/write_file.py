@@ -12,8 +12,8 @@ def write_model(class_object, first_class=False):
     model_file = open(file_name, write_type)
     model_file.write(first_line)
 
-    class_name =  class_object.name.lower()
-    model_file.write('class %s(models.Model):\n' % class_name.title())
+    class_name =  class_object.name
+    model_file.write('class %s(models.Model):\n' % class_name)
 
     for field in class_object.field_set.all():
         opts =  field.options.split('fk_name=')
@@ -41,11 +41,18 @@ def write_model(class_object, first_class=False):
     model_file.write(x)
 
     model_file.write('\n    def get_absolute_url(self):\n')
-    x = "        return '/%s/" % class_name
+    x = "        return '/%s/" % class_name.lower()
     x += "%s' % self.id\n"
     model_file.write(x)
 
     model_file.close()
+
+def view_no_template():
+    return "    x = '<ul>\\n'\n" +\
+           "    for o in objects:\n" +\
+           "        x += '<li>%s</li>\\n' % o\n" +\
+           "    x += '</ul>'\n" +\
+           "    return HttpResponse(x)\n"
 
 def write_views(class_object, first_class=False):
     app_name = class_object.application.name.lower()
@@ -60,50 +67,103 @@ def write_views(class_object, first_class=False):
         first_line = "from django.http import HttpResponse, HttpResponseRedirect, Http404\n" +\
         "from django.views.generic.simple import direct_to_template\n" +\
         "from django.shortcuts import get_object_or_404\n" +\
-        "from %s.models import *\n" % app_name +\
-        "from %s.forms import *\n\n" % app_name 
+        "from %s.models import *\n" % app_name
+        if class_object.application.has_forms():
+            first_line += "from %s.forms import *\n\n" % app_name 
+        else:
+            first_line += '\n'
 
     view_file = open(file_name, write_type)
     view_file.write(first_line)
 
     view_file.write('def %s_list(request):\n' % class_name)
     view_file.write('    objects = %s.objects.all()\n' % class_object.name)
-    view_file.write("    return direct_to_template(request, '%s/%s_list.html', {'objets':objects})\n" % (class_name, class_name))
+
+    if class_object.create_templates:
+        view_file.write("    return direct_to_template(request, '%s/%s_list.html', {'objets':objects})\n" % (class_name, class_name))
+    else:
+        x = "    x = '<ul>\\n'\n" +\
+            "    for o in objects:\n" +\
+            "        x += '<li>%s</li>\\n' % o\n" +\
+            "    x += '</ul>'\n" +\
+            "    return HttpResponse(x)\n"
+        view_file.write(x)
+
     view_file.write('\n')
     view_file.write("def %s_detail(request, oid):\n" % class_name)
     view_file.write("    object = get_object_or_404(%s, pk=oid)\n" % class_object.name)
-    view_file.write("    return direct_to_template(request, '%s/%s_detail.html',{'object':object})\n" % (class_name, class_name))
+
+    if class_object.create_templates:
+        view_file.write("    return direct_to_template(request, '%s/%s_detail.html',{'object':object})\n" % (class_name, class_name))
+    else:
+        x = "    x = ''\n"
+        for field in class_object.field_set.all():
+            x += "    x += '%s: %%s<br/>\\n' %% object.%s\n" % (field.name.title(), field.name.lower())
+        x += '    return HttpResponse(x)\n'
+        view_file.write(x)
+
     view_file.write('\n')
-    view_file.write("def %s_new(request):\n" % class_name)
-    view_file.write('    form = %sForm()\n' % class_object.name)
-    view_file.write('    if request.POST:\n')
-    view_file.write('        if request.POST.get("cancel"):\n')
-    view_file.write('            return HttpResponseRedirect("/%s/")\n' % class_name)        
-    view_file.write('        form = %sForm(data=request.POST)\n' % class_object.name)
-    view_file.write('        if form.is_valid():\n')
-    view_file.write('            object = form.save()\n')
-    view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
-    view_file.write("    return direct_to_template(request, '%s/%s_new.html', {'form':form})\n" % (class_name, class_name))
-    view_file.write('\n')
-    view_file.write('def %s_edit(request, oid):\n' % class_name)
-    view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_object.name)
-    view_file.write('    form = %sForm(instance=object)\n' % class_name.title())
-    view_file.write('    if request.POST:\n')
-    view_file.write('        form = %sForm(data=request.POST, instance=object)\n' % class_object.name)
-    view_file.write('        if form.is_valid():\n')
-    view_file.write('            form.save()\n')
-    view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
-    view_file.write("    return direct_to_template(request, '%s/%s_edit.html', {'form':form, 'object':object})\n" % (class_name, class_name))
-    view_file.write('\n')
-    view_file.write('def %s_delete(request,oid):\n' % class_name)
-    view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_object.name)
-    view_file.write('    if request.POST:\n')
-    view_file.write("        if request.POST.get('cancel'):\n")
-    view_file.write("            return HttpResponseRedirect(object.get_absolute_url())\n")
-    view_file.write('        else:\n')
-    view_file.write('            object.delete()\n')
-    view_file.write("            return HttpResponseRedirect('/%s/')\n" % class_name)
-    view_file.write("    return direct_to_template(request, '%s/%s_delete.html', {'object':object})\n" % (class_name, class_name))
+    
+    if class_object.create_forms:
+        view_file.write("def %s_new(request):\n" % class_name)
+        view_file.write('    form = %sForm()\n' % class_object.name)
+        view_file.write('    if request.POST:\n')
+        view_file.write('        if request.POST.get("cancel"):\n')
+        view_file.write('            return HttpResponseRedirect("/%s/")\n' % class_name)        
+        view_file.write('        form = %sForm(data=request.POST)\n' % class_object.name)
+        view_file.write('        if form.is_valid():\n')
+        view_file.write('            object = form.save()\n')
+        view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
+        if class_object.create_templates:
+            view_file.write("    return direct_to_template(request, '%s/%s_new.html', {'form':form})\n" % (class_name, class_name))
+        else:
+            x = "    x = '<form method=\"post\" action=\"\">' \n" +\
+                "    x += '%s' % form.as_table() \n" +\
+                "    x += '\\n<input type=\"submit\" value=\"Save\" name=\"save\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '<input type=\"submit\" value=\"Cancel\" name=\"cancel\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '</form>'\n" +\
+                "    return HttpResponse(x)\n"
+            view_file.write(x)
+        view_file.write('\n')
+
+        view_file.write('def %s_edit(request, oid):\n' % class_name)
+        view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_object.name)
+        view_file.write('    form = %sForm(instance=object)\n' % class_name.title())
+        view_file.write('    if request.POST:\n')
+        view_file.write('        form = %sForm(data=request.POST, instance=object)\n' % class_object.name)
+        view_file.write('        if form.is_valid():\n')
+        view_file.write('            form.save()\n')
+        view_file.write('            return HttpResponseRedirect(object.get_absolute_url())\n')
+        if class_object.create_templates:
+            view_file.write("    return direct_to_template(request, '%s/%s_edit.html', {'form':form, 'object':object})\n" % (class_name, class_name))
+        else:
+            x = "    x = '<form method=\"post\" action=\"\">' \n" +\
+                "    x += '%s' % form.as_table() \n" +\
+                "    x += '\\n<input type=\"submit\" value=\"Save\" name=\"save\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '<input type=\"submit\" value=\"Cancel\" name=\"cancel\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '</form>'\n" +\
+                "    return HttpResponse(x)\n"
+            view_file.write(x)
+        view_file.write('\n')
+
+        view_file.write('def %s_delete(request,oid):\n' % class_name)
+        view_file.write('    object = get_object_or_404(%s, pk=oid)\n' % class_object.name)
+        view_file.write('    if request.POST:\n')
+        view_file.write("        if request.POST.get('cancel'):\n")
+        view_file.write("            return HttpResponseRedirect(object.get_absolute_url())\n")
+        view_file.write('        else:\n')
+        view_file.write('            object.delete()\n')
+        view_file.write("            return HttpResponseRedirect('/%s/')\n" % class_name)
+        if class_object.create_templates:
+            view_file.write("    return direct_to_template(request, '%s/%s_delete.html', {'object':object})\n" % (class_name, class_name))
+        else:
+            x = "    x = '<form method=\"post\" action=\"\">\\n'\n" +\
+                "    x += '<h2>Delete %s?<h2>\\n' % object\n" +\
+                "    x += '<input type=\"submit\" value=\"Delete\" name=\"delete\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '<input type=\"submit\" value=\"Cancel\" name=\"cancel\" class=\"button\"/>\\n' +\\ \n" +\
+                "         '</form>'\n" +\
+                "    return HttpResponse(x)\n"
+            view_file.write(x)            
     view_file.write('\n')
 
     view_file.close()
@@ -137,7 +197,7 @@ def write_urls(class_object, first_class=False, last_class=False):
     app_name = class_object.application.name.lower()
     file_name = './%s/urls.py' % app_name
     write_type = 'a'
-    first_line = '\nurlpatterns += patterns('',\n'
+    first_line = "\nurlpatterns += patterns('',\n"
 
     if first_class:
         write_type = 'w'
@@ -318,9 +378,11 @@ def write_templates(class_object):
     make_folder('./%s/templates' % class_object.application.name.lower())
     make_folder('./%s/templates/%s' % (class_object.application.name.lower(), class_object.name.lower()))
     write_template_base(class_object)
-    write_template_new(class_object)
     write_template_list(class_object)
     write_template_detail(class_object)
-    write_template_edit(class_object)
-    write_template_delete(class_object)
+
+    if class_object.create_forms:
+        write_template_new(class_object)
+        write_template_edit(class_object)
+        write_template_delete(class_object)
 
