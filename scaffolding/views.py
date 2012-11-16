@@ -184,20 +184,28 @@ def application_process(request, rid, aname):
                 app_init_file = open('./%s/__init__.py' % app_name, 'w')
                 app_init_file.close()
              
-            first_class=True
+            first_class = first_view = first_forms =  first_urls = first_admin =True
             count = 1
             # create all classes without fk first.
             for c in list(app.class_set.exclude(field__type=FIELD_TYPE_FOREIGNKEY))+list(app.class_set.filter(field__type=FIELD_TYPE_FOREIGNKEY).distinct()):
                 if c.field_set.count():
                     write_model(c, first_class)
                     if c.create_view:
-                        write_views(c, first_class)
+                        write_views(c, first_view)
+                        if first_view:
+                            first_view = False
                     if c.create_forms:
-                        write_forms(c, first_class)
+                        write_forms(c, first_forms)
+                        if first_forms:
+                            first_forms = False
                     if c.create_urls:
-                        write_urls(c, first_class, count == c.field_set.count())
+                        write_urls(c, first_urls, count == c.field_set.count())
+                        if first_urls:
+                            first_urls = False
                     if c.create_admin:
-                        write_admin(c, first_class)
+                        write_admin(c, first_admin)
+                        if first_admin:
+                            first_admin = False
                     if c.create_templates:
                         write_templates(c)
 
