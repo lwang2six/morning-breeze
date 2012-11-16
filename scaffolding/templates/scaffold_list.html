@@ -15,6 +15,7 @@
 {% endblock %}
 {% block content %}
     <div class="section">
+        {% if runs %}
         <table border="1">
 
             <tr style="background-color:#FFF"><th style="padding:10px 30px; text-align:center;">Scaffold Project ID</th><th style="padding:10px 30px; text-align:center;" >Created Date</th></tr>
@@ -24,6 +25,9 @@
             {% endfor %}
 
         </table>
+        {% else %}
+            <h2>There isn't any projects right now. <a href="/scaffold/new/">Click here to start a project</a></h2>
+        {% endif %}
     </div>
 
 {% endblock %}

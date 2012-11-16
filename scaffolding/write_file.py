@@ -80,7 +80,7 @@ def write_views(class_object, first_class=False):
     view_file.write('    objects = %s.objects.all()\n' % class_object.name)
 
     if class_object.create_templates:
-        view_file.write("    return direct_to_template(request, '%s/%s_list.html', {'objets':objects})\n" % (class_name, class_name))
+        view_file.write("    return direct_to_template(request, '%s/%s_list.html', {'objects':objects})\n" % (class_name, class_name))
     else:
         x = "    x = '<ul>\\n'\n" +\
             "    for o in objects:\n" +\
