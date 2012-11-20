@@ -1,0 +1,7 @@
+{% load scaffold_tags %} 
+    <div>
+        <div class="scaffold_left_content"><a{% if path == '/scaffold/' %}class="active"{% endif %} href="/scaffold/">Home</a></div>
+        <div class="scaffold_left_content"><a{% if path == '/scaffold/new/' %}class="active"{% endif %} href="/scaffold/new/">New Scaffold Project</a></div>
+        <div class="scaffold_left_content"><a{% if path == '/scaffold/database/' %}class="active"{% endif %} href="/scaffold/database/">New Scaffold Database Project</a></div>
+        <div class="scaffold_left_content"><a{% if path ==  '/scaffold/runs/' %}class="active"{% endif %} href="/scaffold/runs/">Existing Scaffold Projects</a></div>
+    </div>
