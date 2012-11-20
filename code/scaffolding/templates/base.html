@@ -1,0 +1,287 @@
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+
+    <style>
+        a{
+            text-decoration:none;
+        }
+        table{
+            border-collapse: collapse;
+        }
+        form{
+            margin:0px;
+        }
+        tr{
+            background-color:#e8e8e8;
+        }
+        th{
+            padding: 5px 5px 5px 20px;
+        }
+
+        td{
+            padding: 10px 20px 10px 10px;
+        }
+
+        fieldset{
+            margin-bottom:10px;
+            padding: 0px 10px 10px 10px;
+        }
+        
+        fieldset .help_text{
+            float:right; 
+            margin-top:10px;
+            margin-right: 20px;
+            font-size:13px;
+            color: #6e6e6e
+        }
+
+        ul{
+            margin-top: 5px;
+            margin-bottom: 0px
+        }
+
+        .back_link{
+            padding: 22%;
+            font-size:12px;
+            text-align:center;
+        }
+
+        .delete, .edit{
+            font-size:12px;
+            font-weight:bold;
+            margin-left:15px;
+
+            color:#666;
+
+        }
+        .active{
+            pointer-events:none;
+            cursor:default;
+            color:#000;
+            font-weight:bold;
+        }
+
+        .c_td, .c_th{
+            padding: 10px 20px 0px 10px;
+        }
+
+        .fn_td, .fn_th{
+        }
+
+        .ft_td, .ft_th{
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+        .fo_td, .fo_th{
+            padding-top: 0px;
+        }
+        .s_td, .s_th{
+            padding: 0px 20px 5px 10px;
+        }
+
+        .e_td, .e_th{
+            padding: 5px 20px 15px 10px;
+        }
+
+        .tr_title{
+            background-color:#FFFFFF;
+            border-bottom: 3px solid #000000;
+        }
+        .tr_gray{
+           background-color:#d6d6d6;
+        }
+
+        .title{
+            font-size:35px;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .page_title{
+            padding-left: 20px;
+
+            padding-top:20px;
+            font-size:23px;
+            font-weight:bold;
+        }
+        .page_title span{
+            font-size:45px;
+        }
+
+        .left{
+            width:120px;
+            float: left;
+            font-size:14px;
+            border-right: 3px solid black;
+            padding-right:50px;
+            padding-bottom:50px;
+        }
+
+        .left_content{
+            float: left;
+            margin-top:120px;
+        }
+        .left_content h3{
+            margin: 8px 0px 6px 0px;
+            padding-left:10px;
+            font-size:20px;
+        }
+        .left_content ul{
+            margin:0px 0px 10px 0px;
+            list-style:none;
+            padding-left:15px;
+        }
+        .left_content ul li{
+            padding-bottom:3px;
+            padding-left:8px;
+        }
+        .left_content .app_title{
+            font-size:18px;
+        }
+        .left_content .class_title{
+            font-size: 15px;
+            padding-left:24px;
+        }
+
+        .left_content .scaffold_left_content{
+            text-align:center;
+            width:150px;
+            padding:0px;
+            margin-top:5px;
+            margin-left:10px;
+            margin-bottom:10px;
+            font-weight:bold;
+        }
+
+        .description{
+            margin-left:30px;
+            width:500px;
+        }
+        .top_left{
+            float: left;
+            height: 100px; 
+            width: 170px; 
+            position: absolute;
+            border-bottom: 3px solid black;
+        }
+        .right{
+            margin-left:170px;
+            border-left: 3px solid black;
+            padding-bottom:50px;
+
+        }
+        .right_content{
+            padding :30px;
+        }
+        .top_right{
+            height: 100px;
+            border-bottom: 3px solid black;
+        }
+        .section{
+            margin-bottom: 50px;
+        }
+        .section .title{
+            font-size: 20px;
+            padding-top: 3px;
+            margin-bottom: 5px;
+        }
+        .section ul{
+            list-style: none;
+        }
+        .section li{
+            padding-bottom: 10px;
+        }
+
+        .section .help_text{
+            font-size: 13px;
+            margin: 0px 0px 10px 30px;
+            color: #A6A6A6;
+        }
+        .content_title{
+            font-weight: bold;
+            font-size: 30px;
+            padding-bottom: 3px;
+        }
+
+        .app_title, .class_title{
+           font-size: 25px;  
+            padding-left: 35px;
+        }   
+        .status{
+            font-size: 16px;
+        }
+
+        .detail_field_list, .review_section{
+            margin-left: 65px;
+            margin-top: 5px;
+            font-size: 16px;
+        }
+        .detail_field_list .status{
+            font-size: 13px;
+        }
+
+        .button{
+            padding: 5px;
+            background-color: #DEDEDE;
+            color: #000;
+            border: 2px outset #F0F0F0;
+            
+        }
+        .field_name{
+            font-size: 20px;
+            font-weight: bold;
+            margin-left:25px;
+        }
+        .field_options{
+            margin-top: 5px;
+            margin-left: 55px;
+        }
+        .field{
+            margin-bottom: 15px;
+        }
+        .field_option_list ul{
+            list-style: none;
+        }
+        .field_option_list li{
+            margin-left: 50px;
+        }
+
+        .review_section li{
+
+            padding-bottom:5px;
+        }
+        
+        .review_section pre{
+            margin:5px 0px 0px;
+
+
+            
+        }
+        .review_class_section{
+            margin-bottom:20px;
+        }
+
+    </style>
+</heads>
+<body>
+  <div >
+    <div  class="left">
+        <div class="top_left">
+            {% block top_left_content %}{% endblock %}
+        </div>
+        <div class="left_content">
+        {% block left_content %}{% endblock %}
+        </div>
+    </div>
+    <div  class="right">
+        <div class="top_right">
+            {% block title %}{% endblock %}
+        </div>
+
+        <div class="right_content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+  </div>
+
+</body>
