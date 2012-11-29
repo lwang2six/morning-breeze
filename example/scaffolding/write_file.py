@@ -33,7 +33,14 @@ def write_model(class_object, first_class=False):
         model_file.write('    %s = models.%s(%s)\n'% (field.name.lower(), field.get_type_display(), opts))
 
     if class_object.extras:
-        model_file.write('\n%s\n' % class_object.extras.rstrip('\n')) 
+        line = class_object.extras.rstrip('\n')
+        # add spaces if spaces were not added to the content
+        if not class_object.extras.startswith(' '):
+            line = '    %s' % line
+            line = line.replace('\n', '\n    ')
+        model_file.write('\n%s\n' % line) 
+
+
 
     model_file.write('\n    def __unicode__(self):\n')
     x = "        return '%s - %s' % (self.id, self."

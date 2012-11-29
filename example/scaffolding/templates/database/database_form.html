@@ -16,7 +16,7 @@
 
 {% block content %}
 <form method="post"  enctype="multipart/form-data" action="">{% csrf_token %}
-<fieldset style="width:640px; padding:13px 10px 15px 15px;">
+<fieldset style="width:575px; padding:13px 10px 15px 15px;">
 <table>
 {% if db_form.db_name.errors %}<tr><th></th><td>{{db_form.db_name.errors}}</td></tr>{% endif %}
 <tr><th>{{db_form.db_name.label_tag}}:</th><td>{{db_form.db_name}}</td></tr>

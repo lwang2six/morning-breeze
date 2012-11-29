@@ -15,7 +15,10 @@
             background-color:#e8e8e8;
         }
         th{
+            text-align:left;
+            width:166px;
             padding: 5px 5px 5px 20px;
+            white-space:nowrap;
         }
 
         td{
@@ -61,10 +64,13 @@
             font-weight:bold;
         }
 
-        .c_td, .c_th{
+
+        .c_td{
             padding: 10px 20px 0px 10px;
         }
-
+        .c_th{
+            padding: 10px 20px 0px 20px;
+        }
         .fn_td, .fn_th{
         }
 
@@ -75,12 +81,19 @@
         .fo_td, .fo_th{
             padding-top: 0px;
         }
-        .s_td, .s_th{
+        .s_td{
             padding: 0px 20px 5px 10px;
         }
 
-        .e_td, .e_th{
+        .s_th{
+            padding: 0px 20px 5px 20px;
+        }
+
+        .e_td{
             padding: 5px 20px 15px 10px;
+        }
+        .e_th{
+            padding: 5px 20px 15px 20px;
         }
 
         .tr_title{
@@ -91,6 +104,11 @@
            background-color:#d6d6d6;
         }
 
+        .error, .error .tr_gray{
+            background-color:red;
+            color:#d6d6d6;
+        }
+
         .title{
             font-size:35px;
             font-weight:bold;
@@ -99,7 +117,7 @@
 
         .page_title{
             padding-left: 20px;
-
+            white-space:nowrap;
             padding-top:20px;
             font-size:23px;
             font-weight:bold;
@@ -227,6 +245,16 @@
             border: 2px outset #F0F0F0;
             
         }
+
+        .delete_button{
+            font-size:10px;
+            padding: 5px 5px 5px 5px;
+            background-color: #DEDEDE;
+            color: #000;
+            border: 2px outset #F0F0F0;
+            float:right;
+        }
+
         .field_name{
             font-size: 20px;
             font-weight: bold;

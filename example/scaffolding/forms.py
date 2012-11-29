@@ -74,7 +74,7 @@ class ClassFieldForm(forms.ModelForm):
 
     class Meta:
         model = Class
-        exclude = ['id', 'application', 'create_view', 'create_urls', 'create_forms', 'create_templates', 'create_admin', 'status', 'extras','created']
+        exclude = ['id', 'application', 'create_view', 'create_urls', 'create_forms', 'create_templates', 'create_admin', 'status', 'created']
 
     def clean_name(self):
         name = self.cleaned_data['name']
@@ -250,7 +250,7 @@ class DatabaseForm(forms.Form):
     db_choices.remove('scaffold_temp')
     db_name = forms.ChoiceField(label="Database to Scaffold", choices=[('','---------------')]+[(str(db), str(db)) for db in db_choices], required=False)
     
-    db_location = forms.FileField(label="Database Location")
+    db_location = forms.FileField(label="Database Location", required=False)
     db = forms.CharField(label="Database to source the data", help_text="database to model after, it has to be one of the ones inside the DATABASES", required=False)
     
     def clean_db(self):
@@ -280,5 +280,16 @@ class DatabaseForm(forms.Form):
             return None
     
     def clean_db_location(self):
-        location = self.cleaned_data.get('db_location')
-        return location
+        print self.files
+
+        return self.cleaned_data.get('db_location')
+
+
+
+
+
+
+
+
+
+

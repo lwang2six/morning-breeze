@@ -155,6 +155,9 @@ class Field(models.Model):
     def __unicode__(self):
         return '%s.%s' % (self.parent_class, self.name)
 
+    def get_absolute_url(self):
+        return '%sfield/%s/' % (self.parent_class.get_absolute_url(), self.id)
+
     def get_options(self):
         x = self.options.split(',')
         opt = []

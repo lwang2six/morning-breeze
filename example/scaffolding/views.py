@@ -163,6 +163,15 @@ def class_delete(request, rid, aname, cname):
             return HttpResponseRedirect(app.get_absolute_url())
     return direct_to_template(request, 'class/class_delete.html', {'run':run, 'app':app, 'clas':clas, 'path':request.path})
 
+def field_delete(request, rid, aname, cname, fid):
+    run = get_object_or_404(Run, pk=rid)
+    app = get_object_or_404(Application, run=run, name=aname)
+    clas = get_object_or_404(Class, application=app, name=cname)
+    field = get_object_or_404(Field, parent_class=clas, pk=fid)
+    
+    field.delete()
+    return HttpResponseRedirect(clas.get_edit_absolute_url())
+
 def application_confirmation(request, rid, aname):
     run = get_object_or_404(Run, pk=rid)
     app = get_object_or_404(Application, run=run, name=aname)
@@ -229,12 +238,14 @@ def scaffold_database(request):
         db_form = DatabaseForm(data=request.POST, files=request.FILES)
 
         if db_form.is_valid():
-
-            if db_form.cleaned_data['db_name']:
+            if not db_form.cleaned_data['db_name'] and not db_form.cleaned_data['db_location']:
+                pass
+            elif db_form.cleaned_data['db_name']:
                 x = process_sql(db_form.cleaned_data['db_name'])
                 return HttpResponseRedirect(x.get_absolute_url())
             else:
                 d_file = db_form.cleaned_data['db_location']
+
                 db_location = './scaffolding/media/%s' % d_file.name
                 db_file = open(db_location, 'w')
                 for  chunk in d_file.chunks():
@@ -245,9 +256,10 @@ def scaffold_database(request):
                 #assumin the default database's user account can create and modify databases
                 database = settings.DATABASES['default']
                 cur = connections['default'].cursor()
+                db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="scaffold_temp";')
+                if db_exist:
+                    x =  cur.execute("DROP DATABASE scaffold_temp;")
                 x = commands.getoutput("mysql -u %s -p%s -e 'create database if not exists scaffold_temp;'" % (database['USER'], database['PASSWORD']))
-                #cur.execute('CREATE DATABASE IF NOT EXISTS scaffold_temp;')
-                db_exist = cur.execute('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME="%s";' % db_form.cleaned_data.get('db'))
 
                 x =  commands.getoutput('mysql -u %s -p%s scaffold_temp < %s' % (database['USER'], database['PASSWORD'], db_location))
                 db = db_form.cleaned_data.get('db')

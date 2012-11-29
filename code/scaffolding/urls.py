@@ -8,6 +8,7 @@ if settings.DEBUG:
         (r'^scaffold/new/$', 'application_new'),
         (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/edit/$', 'application_edit'),
         (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/review/$', 'application_confirmation'),
+        (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/field/(?P<fid>\d+)/delete/$', 'field_delete'),
         (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/edit/$', 'class_edit'),
         (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/delete/$', 'class_delete'),
         (r'^scaffold/(?P<rid>\d+)/applications/(?P<aname>[a-zA-Z]+([\-_]*[a-zA-Z]*)?)/classes/(?P<cname>[a-zA-Z]+([a-zA-Z\-_]*[a-zA-Z]+)?)/$', 'class_detail'),

@@ -19,19 +19,20 @@
 {% include "class/scaffold_js.html" %}
 
 <form method="post" action="">{% csrf_token %}
-<fieldset style="width:375px;">
-<table>
+<fieldset style="width:400px;">
+<table style="width:400px;">
     {% if form.app_name.errors %}<tr class="error" style="background-color:#FFF;"><th></th><td>{{form.app_name.errors}}</td></tr>{% endif %}
             <tr class="tr_title"><th>{{form.app_name.label_tag}}:</th><td>{{form.app_name}}</td></tr>
     {% if form.name.errors %}<tr class="error" style="background-color:#FFF;"><th></th><td>{{form.name.errors}}</td></tr>{% endif %}
-    <tr class="tr_title"><th>{{form.name.label_tag}}: </th><td>{{form.name}}</td></tr>
+    <tr class="tr_title" style="border-bottom:none;"> <th>{{form.name.label_tag}}: </th><td style="padding-bottom:0px;">{{form.name}}</td></tr>
+    <tr class="tr_title"><th>{{form.extras.label_tag}}: </th><td>{{form.extras}}</td></tr>
  
 {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
 {{formset.management_form}}
 {% for f in formset.forms %}
 <div class="{{f.prefix}}_container">
-    {% if f.non_field_errors %}<tr><th>Errors</th><td> {{ f.non_field_errors}}</td></tr>{% endif %}
+    {% if f.non_field_errors %}<tr class="error"><th>Errors</th><td> {{ f.non_field_errors}}</td></tr>{% endif %}
     {% if f.name.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray {% endif %}"><th></th><td>{{f.name.errors}}</td></tr>{% endif %}
     <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-name_row"><th class="fn_th">{{f.name.label_tag}}: </th><td class="fn_td">{{f.name}}</td></tr>
     {% if f.type.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.type.errors}}</td></tr>{% endif %}
@@ -51,18 +52,23 @@
         {% endif %}
     {% endif %}
     {% if f.options.errors %}<tr class="error{% if not forloop.counter|divisibleby:2 %} tr_gray{% endif %}"><th></th><td>{{f.options.errors}}</td></tr>{% endif %}
-        <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-options_row">
-            <th class="fo_th">{{f.options.label_tag}}: </th>
-            <td class="fo_td">
-                <div id="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div>
-            </td>
-        </tr>
-        <tr>
-            <script>
+    <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}id="{{f.prefix}}-options_row">
+        <th class="fo_th">{{f.options.label_tag}}: </th>
+        <td class="fo_td">
+            <div id="id_{{f.prefix}}_choice_list"> {% doSome f f.prefix %}</div>
+        </td>
+    </tr>
+
+    {% if f.instance.id %}
+        <tr {% if not forloop.counter|divisibleby:2 %}class="tr_gray" {% endif %}><th></th><td style="padding-top:0px;"><a class="delete_button" onclick="return confirm('Are you sure you want to remove this field?')" href="{{f.instance.get_absolute_url}}delete/">x - delete</a></td></tr>
+    {% endif %}
+
+    <tr>
+        <script>
                 $("#id_{{f.prefix}}-type").change(function(){$("#id_{{f.prefix}}-type option:selected").each(function(){yay("{{f.prefix}}", $(this).text(), '{{forloop.counter}}');});});
-            </script>
-            {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
-        </tr>
+        </script>
+        {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+    </tr>
 
 {% endfor %}
 </table>
