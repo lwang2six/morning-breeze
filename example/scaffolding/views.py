@@ -203,14 +203,21 @@ def application_process(request, rid, aname):
                         write_views(c, first_view)
                         if first_view:
                             first_view = False
+
+                        write_urls(c, first_urls, count == c.field_set.count())
+                        if first_urls:
+                            first_urls = False
+
                     if c.create_forms:
                         write_forms(c, first_forms)
                         if first_forms:
                             first_forms = False
-                    if c.create_urls:
-                        write_urls(c, first_urls, count == c.field_set.count())
-                        if first_urls:
-                            first_urls = False
+
+                    #if c.create_urls:
+                    #    write_urls(c, first_urls, count == c.field_set.count())
+                    #    if first_urls:
+                    #        first_urls = False
+
                     if c.create_admin:
                         write_admin(c, first_admin)
                         if first_admin:
