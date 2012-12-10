@@ -9,7 +9,11 @@
 {% endblock %}
 
 {% block left_content %}
-   {% include "application/includes/left_content.html" %}
+  {% if run.application_set.all %}
+    {% include "application/includes/left_content.html" %}
+  {% else %}
+    {% include "application/includes/main_left_content.html" %}
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -23,7 +27,7 @@
         <ul>
             {% for app in apps %}
                 <li>
-                    <a class="title" href="{{app.get_absolute_url}}">{{app.name.title}}</a> 
+                    <a class="title" href="{{app.get_absolute_url}}">{{app.name}}</a> 
                     <a class="edit" href="{{app.get_absolute_url}}edit">Edit</a>  
                     <a class="delete" href="{{app.get_absolute_url}}delete/">Delete</a>
                 </li>
@@ -36,7 +40,7 @@
         <ul>
             {% for app in processed %}
                 <li>
-                    <a class="title" href="{{app.get_absolute_url}}">{{app.name.title}}</a> 
+                    <a class="title" href="{{app.get_absolute_url}}">{{app.name}}</a> 
                     <a class="edit" href="{{app.get_absolute_url}}edit">Edit</a>  
                     <a class="delete" href="{{app.get_absolute_url}}delete/">Delete</a>
                 </li>

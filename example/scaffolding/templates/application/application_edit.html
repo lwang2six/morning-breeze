@@ -67,7 +67,9 @@
     <div style="margin-left:8px;">
         <input type="button" id="one_more" value="Add Another Class" class="button" />
         <input type="submit" value="Save" name="save" class="button" />
-        <input type="submit" value="Continue" name="continue" class="button" />
+        {% if not app %}
+            <input type="submit" value="Continue" name="continue" class="button" />
+        {% endif %}
         <input type="submit" value="Cancel" name="cancel" class="button" />
     </div>
 </form>

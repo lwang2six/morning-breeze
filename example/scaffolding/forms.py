@@ -48,7 +48,7 @@ class ApplicationFieldForm(forms.ModelForm):
 class ClassForm(forms.ModelForm):
     class Meta:
         model = Class
-        exclude = ['id','application', 'status', 'created']
+        exclude = ['id','application', 'status', 'create_urls','created']
 
     def clean_name(self):
         name = self.cleaned_data.get('name')

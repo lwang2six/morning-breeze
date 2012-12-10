@@ -50,7 +50,8 @@ def application_base(request, rid=None, aname=None):
     if aname:
         app = get_object_or_404(Application, run=run, name=aname)
         form = ApplicationForm(instance=app)
-        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
+        class_count = 0 if app.class_set.count() else 3
+        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=class_count, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
 
     if request.method == 'POST':
@@ -98,13 +99,17 @@ def application_delete(request, rid, aname):
     app = get_object_or_404(Application, run=run, name=aname)
     
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(app.get_absolute_url())
+
         if not request.POST.get('cancel'):
             for clas in app.class_set.all():
                 for field in clas.field_set.all():
                     field.delete()
                 clas.delete()
             app.delete()
-        return HttpResponseRedirect('applications')
+            return HttpResponseRedirect(run.get_absolute_url())
+        return HttpResponseRedirect(app.get_absolute_url())
     return direct_to_template(request, 'application/application_delete.html', {'run':run, 'app':app, 'path':request.path})               
 
 def class_detail(request, rid, aname, cname):
@@ -156,6 +161,8 @@ def class_delete(request, rid, aname, cname):
     clas = get_object_or_404(Class, application=app, name=cname)
 
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(clas.get_absolute_url())
         if not request.POST.get('cancel'):
             for field in clas.field_set.all():
                 field.delete()
@@ -183,6 +190,8 @@ def application_process(request, rid, aname):
     app = get_object_or_404(Application, run=run, name=aname)
 
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(app.get_absolute_url())
         if not request.POST.get('cancel'):
             #if app.status == APPLICATION_STATUS_PROCESSED:
             #    raise Http404

@@ -108,7 +108,7 @@ class Class(models.Model):
     name = models.CharField(max_length=60, verbose_name='Class Name')
     application = models.ForeignKey(Application)
     create_view = models.BooleanField(default=False, verbose_name="views.py")
-    #create_urls = models.BooleanField(default=False, verbose_name="urls.py")
+    create_urls = models.BooleanField(default=False, verbose_name="urls.py")
     create_forms = models.BooleanField(default=False, verbose_name="forms.py")
     create_templates = models.BooleanField(default=False, verbose_name="templates")
     create_admin = models.BooleanField(default=False, verbose_name="admin.py")
