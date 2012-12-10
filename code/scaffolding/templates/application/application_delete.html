@@ -4,7 +4,7 @@
 {% block title %}<div class="page_title">delete<span>|{{app.name}}</span></div>{% endblock %}
 
 {% block top_left_content %}
-    <div class="back_link"><a href="/applications">back to applications listing</a></div>
+    <div class="back_link"><a href="{{run.get_absolute_url}}applications/">back to applications listing</a></div>
 {% endblock %}
 
 {% block left_content %}
@@ -16,7 +16,7 @@
 {% block content %}
     <form method="post" action="">{% csrf_token %}
     <fieldset>
-    <h2>Are you sure you want to delete the <a href="{{app.get_absolute_url}}">{{app.name.title}}</a> app?</h2>
+    <h2>Are you sure you want to delete the <a href="{{app.get_absolute_url}}">{{app.name}}</a> app?</h2>
     </fieldset>
         <input type="submit" value="Delete" name="delete" class="button"/>
         <input type="submit" value="Cancel" name="cancel" class="button"/>

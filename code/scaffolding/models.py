@@ -48,21 +48,7 @@ FIELD_TYPES_DIC = {'BooleanField':FIELD_TYPE_BOOLEAN, 'CharField':FIELD_TYPE_CHA
                    'ForeignKey':FIELD_TYPE_FOREIGNKEY, 'IntegerField':FIELD_TYPE_INTEGER,
                    'ImageField':FIELD_TYPE_IMAGE,'PositiveIntegerField':FIELD_TYPE_POSITIVEINTEGER, 
                    'TextField':FIELD_TYPE_TEXT}
-                   
-#TBD
-#                   
-#class FieldType(models.Model):
-#    name = models.CharField(max_length=200)
-#    options = models.ManyToManyField(Option, through='OptionList')
-#   
-#class Option(models.Model):
-#    type = models.CharField(max_length=50)
-#    value = models.CharField(max_length=200)
-#
-#class OptionList(models.Model):
-#    field_type = models.ForeignKey(FieldType)
-#    option = models.ForeignKey(Option)   
-    
+   
 class Run(models.Model):    
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     
@@ -95,8 +81,6 @@ class Application(models.Model):
 
     def get_absolute_url(self):
         return '%sapplications/%s/' % (self.run.get_absolute_url(),self.name)
-    #    return '/applications/%s/' % (self.id)
-    #    return '/applications/%s/' % (self.name)
 
     def get_other_apps(self):
         return self.run.application_set.exclude(id=self.id)
@@ -108,7 +92,7 @@ class Class(models.Model):
     name = models.CharField(max_length=60, verbose_name='Class Name')
     application = models.ForeignKey(Application)
     create_view = models.BooleanField(default=False, verbose_name="views.py")
-    #create_urls = models.BooleanField(default=False, verbose_name="urls.py")
+    create_urls = models.BooleanField(default=False, verbose_name="urls.py")
     create_forms = models.BooleanField(default=False, verbose_name="forms.py")
     create_templates = models.BooleanField(default=False, verbose_name="templates")
     create_admin = models.BooleanField(default=False, verbose_name="admin.py")
@@ -117,8 +101,6 @@ class Class(models.Model):
     status = models.CharField(max_length=1, choices=CLASS_STATUSES, default=CLASS_STATUS_UNPROCESSED)
     created = models.DateTimeField(default=datetime.datetime.now, editable=False)
     
-   
-
     class Meta: 
         unique_together=(('name', 'application'),)
 

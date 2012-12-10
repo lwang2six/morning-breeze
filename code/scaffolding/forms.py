@@ -48,7 +48,7 @@ class ApplicationFieldForm(forms.ModelForm):
 class ClassForm(forms.ModelForm):
     class Meta:
         model = Class
-        exclude = ['id','application', 'status', 'created']
+        exclude = ['id','application', 'status', 'create_urls','created']
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
@@ -100,7 +100,6 @@ class ClassFieldForm(forms.ModelForm):
             if str(self.instance.application.id) != str(app_name):
                 if app.class_set.filter(name=self.cleaned_data.get('name')):
                    raise forms.ValidationError('The choosen application already has a class with the same name.')
-            print 'here'
             return app
 
 
@@ -280,8 +279,6 @@ class DatabaseForm(forms.Form):
             return None
     
     def clean_db_location(self):
-        print self.files
-
         return self.cleaned_data.get('db_location')
 
 

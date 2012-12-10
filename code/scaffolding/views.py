@@ -50,7 +50,8 @@ def application_base(request, rid=None, aname=None):
     if aname:
         app = get_object_or_404(Application, run=run, name=aname)
         form = ApplicationForm(instance=app)
-        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=0, can_delete=False)
+        class_count = 0 if app.class_set.count() else 3
+        classFormSet = inlineformset_factory(Application, Class, form=ClassForm, extra=class_count, can_delete=False)
         formset = classFormSet(queryset=Class.objects.filter(application=app), instance=app)
 
     if request.method == 'POST':
@@ -86,9 +87,6 @@ def application_base(request, rid=None, aname=None):
                     if app.class_set.count():
                         return HttpResponseRedirect(app.class_set.order_by('id')[0].get_edit_absolute_url())
 
-                #if request.POST.get('add_another_app'):
-                #    return HttpResponseRedirect('%sapplications/new/' % run.get_absolute_url())
-                #if request.POST.get('save'):
                 return HttpResponseRedirect(app.get_absolute_url())
 
     return direct_to_template(request, 'application/application_edit.html', {'run':run, 'app':app, 'form':form, 'formset':formset, 'path':request.path})
@@ -98,13 +96,17 @@ def application_delete(request, rid, aname):
     app = get_object_or_404(Application, run=run, name=aname)
     
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(app.get_absolute_url())
+
         if not request.POST.get('cancel'):
             for clas in app.class_set.all():
                 for field in clas.field_set.all():
                     field.delete()
                 clas.delete()
             app.delete()
-        return HttpResponseRedirect('applications')
+            return HttpResponseRedirect(run.get_absolute_url())
+        return HttpResponseRedirect(app.get_absolute_url())
     return direct_to_template(request, 'application/application_delete.html', {'run':run, 'app':app, 'path':request.path})               
 
 def class_detail(request, rid, aname, cname):
@@ -118,7 +120,7 @@ def class_edit(request, rid, aname, cname):
     run = get_object_or_404(Run, pk=rid)
     app = get_object_or_404(Application, run=run, name=aname)
     clas = get_object_or_404(Class, application=app, name=cname)
-    #appform = ApplicationFieldForm(instance=app)
+)
     form = ClassFieldForm(instance=clas)
     formnum = 0 if clas.field_set.count() else 3
     fieldFormSet = inlineformset_factory(Class, Field, form=FieldForm, can_delete=False, extra=formnum)
@@ -127,7 +129,6 @@ def class_edit(request, rid, aname, cname):
     if request.method == 'POST':
         form = ClassFieldForm(data=request.POST, instance=clas)
         formset = fieldFormSet(request.POST, instance=clas)
-        #appform = ApplicationFieldForm(data=request.POST, instance=app)
 
         if request.POST.get('cancel'):
             return HttpResponseRedirect(clas.get_absolute_url())
@@ -156,6 +157,8 @@ def class_delete(request, rid, aname, cname):
     clas = get_object_or_404(Class, application=app, name=cname)
 
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(clas.get_absolute_url())
         if not request.POST.get('cancel'):
             for field in clas.field_set.all():
                 field.delete()
@@ -183,9 +186,9 @@ def application_process(request, rid, aname):
     app = get_object_or_404(Application, run=run, name=aname)
 
     if request.method == 'POST':
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(app.get_absolute_url())
         if not request.POST.get('cancel'):
-            #if app.status == APPLICATION_STATUS_PROCESSED:
-            #    raise Http404
             app_name = app.name.lower()
             #writing the stuff to file
             if not os.path.exists('./%s' % app_name):
@@ -212,11 +215,6 @@ def application_process(request, rid, aname):
                         write_forms(c, first_forms)
                         if first_forms:
                             first_forms = False
-
-                    #if c.create_urls:
-                    #    write_urls(c, first_urls, count == c.field_set.count())
-                    #    if first_urls:
-                    #        first_urls = False
 
                     if c.create_admin:
                         write_admin(c, first_admin)
@@ -320,7 +318,6 @@ def process_sql(database_name='scaffold_temp'):
                                 opt = '%s, %s' % (opt, z)
                             else:
                                 opt = z
-
                     try:     
                         type = FIELD_TYPES_DIC[type]
                     except:
